@@ -1,0 +1,58 @@
+{
+	"compiler": {
+		"version": "0.8.24+commit.e11b9ed9"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "CheckpointUnorderedInsertion",
+				"type": "error"
+			}
+		],
+		"devdoc": {
+			"details": "This library defines the `Trace*` struct, for checkpointing values as they change at different points in time, and later looking up past values by block number. See {Votes} as an example. To create a history of checkpoints define a variable type `Checkpoints.Trace*` in your contract, and store a new checkpoint for the current transaction block using the {push} function.",
+			"errors": {
+				"CheckpointUnorderedInsertion()": [
+					{
+						"details": "A value was attempted to be inserted on a past checkpoint."
+					}
+				]
+			},
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/PadiTokenStable_flattened.sol": "Checkpoints"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/PadiTokenStable_flattened.sol": {
+			"keccak256": "0xc37de53c5f86ffa932fbd877b5f99e5626ff8dd1c8aaa37a73603ee57e3e84f6",
+			"urls": [
+				"bzz-raw://3363f65742789d62965f2f9a45d7cd8227689c043f5c911e8ad8d66396a7f026",
+				"dweb:/ipfs/QmTCba5ymgzwsYp1Lf5A9GtYscv3jQrAv4EZa8QdkV3HJ6"
+			]
+		}
+	},
+	"version": 1
+}

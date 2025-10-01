@@ -1,0 +1,3581 @@
+{
+	"id": "b0ca5055018d7753b66acf909e30456b",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.26",
+	"solcLongVersion": "0.8.26+commit.8a97fa7a",
+	"input": {
+		"language": "Solidity",
+		"settings": {
+			"optimizer": {
+				"enabled": true,
+				"runs": 200
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			},
+			"remappings": []
+		},
+		"sources": {
+			"contracts/IPadiProtocol.sol": {
+				"content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ninterface IPadiProtocol {\n    /**\n     * @notice Mint an NFT ID card for a new member.\n     * @param memberAddress The address of the new member.\n     * @param metadataURI The metadata URI for the NFT.\n     * @param paymentAmount The amount of the specific token to be paid.\n     */\n    function mintMembershipNFT(\n        address memberAddress,\n        string calldata metadataURI,\n        uint256 paymentAmount\n    ) external;\n\n    /**\n     * @notice Assign a legal representative (Padi) to a member.\n     * @param memberAddress The address of the member.\n     * @param representativeAddress The address of the legal representative.\n     */\n    function assignRepresentative(\n        address memberAddress,\n        address representativeAddress\n    ) external;\n\n    /**\n     * @notice Confirm that a lawyer (Padi) has responded to an emergency call from a member.\n     * @param memberAddress The address of the member calling for help.\n     * @param caseId The unique identifier for the case.\n     * @param lawyerAddress The address of the lawyer (Padi) responding to the emergency.\n     */\n    function confirmEmergencyResponse(\n        address memberAddress,\n        uint256 caseId,\n        address lawyerAddress\n    ) external;\n\n    /**\n     * @notice Reward a lawyer (Padi) after confirming their response to an emergency.\n     * @param lawyerAddress The address of the lawyer (Padi).\n     * @param caseId The unique identifier for the case.\n     * @param rewardAmount The amount of tokens to reward the lawyer.\n     */\n    function rewardLawyerForEmergency(\n        address lawyerAddress,\n        uint256 caseId,\n        uint256 rewardAmount\n    ) external;\n\n    /**\n     * @notice Sign up a lawyer as a legal representative.\n     * @param lawyerAddress The address of the lawyer signing up.\n     * @param profileUri The URI pointing to the lawyer's profile.\n     */\n    function signUpLawyer(\n        address lawyerAddress,\n        string calldata profileUri\n    ) external;\n\n    /**\n     * @notice Track a new case for a lawyer.\n     * @param lawyerAddress The address of the lawyer handling the case.\n     * @param memberAddress The address of the member involved in the case.\n     * @param descriptionMetadata A URI describing the case.\n     * @param rewardAmount The reward amount associated with the case.\n     */\n    function addCase(\n        address lawyerAddress,\n        address memberAddress,\n        string calldata descriptionMetadata,\n        uint256 rewardAmount,\n        bool isEmergency\n    ) external;\n\n    /**\n     * @notice Mark a case as resolved for a lawyer.\n     * @param lawyerAddress The address of the lawyer handling the case.\n     * @param caseId The unique identifier for the case.\n     */\n    function resolveCase(address lawyerAddress, uint256 caseId) external;\n\n    /**\n     * @notice Get the list of open cases for a lawyer.\n     * @param lawyerAddress The address of the lawyer.\n     * @return caseIds An array of unique identifiers for open cases.\n     */\n    function getOpenCases(\n        address lawyerAddress\n    ) external returns (uint256[] memory caseIds);\n\n    /**\n     * @notice Check if an address is a verified member.\n     * @param memberAddress The address to check.\n     * @return isVerified True if the address is a verified member.\n     */\n    function isMember(\n        address memberAddress\n    ) external view returns (bool isVerified);\n\n    /**\n     * @notice Check if an address is a registered lawyer.\n     * @param lawyerAddress The address to check.\n     * @return isRegistered True if the address is a registered lawyer.\n     */\n    function isLawyer(\n        address lawyerAddress\n    ) external view returns (bool isRegistered);\n\n    /**\n     * @notice Get the legal representative of a member.\n     * @param memberAddress The address of the member.\n     * @return representativeAddress The address of the legal representative.\n     */\n    function getRepresentative(\n        address memberAddress\n    ) external view returns (address representativeAddress);\n\n    /**\n     * @notice Set the token contract address used for payments.\n     * @param tokenAddress The address of the token contract.\n     */\n    function setPaymentToken(address tokenAddress) external;\n\n    // -------------------------------------------------------------------------\n    // New functions and events for Incident and Corroborator interactions\n    // -------------------------------------------------------------------------\n\n    /**\n     * @notice Report a new incident of abuse or misconduct.\n     * @param descriptionMetadata A URI with details about the incident.\n     * @param mediaURIs An array of URIs pointing to evidence (e.g., images, videos).\n     * @return incidentId The unique identifier for the reported incident.\n     */\n    function reportIncident(\n        string calldata descriptionMetadata,\n        string[] calldata mediaURIs\n    ) external returns (uint256 incidentId);\n\n    /**\n     * @notice Add a corroboration (supporting evidence) to an existing incident.\n     * @param incidentId The unique identifier for the incident.\n     * @param comment A comment providing additional context.\n     * @param mediaURIs An array of URIs pointing to supplementary evidence.\n     */\n    function addCorroboration(\n        uint256 incidentId,\n        string calldata comment,\n        string[] calldata mediaURIs\n    ) external;\n\n    /**\n     * @notice Update the verification status of an incident.\n     * @param incidentId The unique identifier for the incident.\n     * @param status The new verification status (0: Unverified, 1: Verified, 2: Rejected).\n     */\n    function updateIncidentStatus(\n        uint256 incidentId,\n        uint8 status\n    ) external;\n\n    // -------------------------------------------------------------------------\n    // Events for Incident and Corroborator interactions\n    // -------------------------------------------------------------------------\n\n    /**\n     * @notice Event emitted when a membership NFT is minted.\n     * @param memberAddress The address of the new member.\n     * @param tokenId The ID of the minted NFT.\n     */\n    event MembershipNFTMinted(\n        address indexed memberAddress,\n        uint256 indexed tokenId\n    );\n\n    /**\n     * @notice Event emitted when a legal representative is assigned to a member.\n     * @param memberAddress The address of the member.\n     * @param representativeAddress The address of the legal representative.\n     */\n    event RepresentativeAssigned(\n        address indexed memberAddress,\n        address indexed representativeAddress\n    );\n\n    /**\n     * @notice Event emitted when a lawyer is rewarded after confirming an emergency response.\n     * @param lawyerAddress The address of the lawyer receiving the reward.\n     * @param rewardAmount The amount of reward given to the lawyer.\n     * @param caseId The unique identifier for the case.\n     */\n    event LawyerRewarded(\n        address indexed lawyerAddress,\n        uint256 rewardAmount,\n        uint256 caseId\n    );\n\n    /**\n     * @notice Event emitted when a lawyer signs up as a legal representative.\n     * @param lawyerAddress The address of the lawyer signing up.\n     */\n    event LawyerSignedUp(address indexed lawyerAddress);\n\n    /**\n     * @notice Event emitted when a new case is added for a lawyer.\n     * @param lawyerAddress The address of the lawyer handling the case.\n     * @param caseId The unique identifier for the case.\n     * @param memberAddress The address of the member involved in the case.\n     */\n    event CaseAdded(\n        address indexed lawyerAddress,\n        uint256 indexed caseId,\n        address indexed memberAddress,\n        bool isEmergency\n    );\n\n    /**\n     * @notice Event emitted when a case is resolved for a lawyer.\n     * @param lawyerAddress The address of the lawyer handling the case.\n     * @param caseId The unique identifier for the case.\n     */\n    event CaseResolved(address indexed lawyerAddress, uint256 indexed caseId);\n\n    /**\n     * @notice Event emitted when the payment token is updated.\n     * @param tokenAddress The new token contract address.\n     */\n    event PaymentTokenUpdated(address indexed tokenAddress);\n\n    /**\n     * @notice Event emitted when an emergency response is confirmed by a lawyer.\n     * @param lawyerAddress The address of the lawyer responding to the emergency.\n     * @param caseId The unique identifier for the case.\n     * @param memberAddress The address of the member involved.\n     * @param timestamp The time when the response was confirmed.\n     */\n    event EmergencyResponseConfirmed(\n        address indexed lawyerAddress,\n        uint256 indexed caseId,\n        address indexed memberAddress,\n        uint256 timestamp\n    );\n\n    /**\n     * @notice Event emitted when a new incident is reported.\n     * @param incidentId The unique identifier for the incident.\n     * @param reporter The address of the member reporting the incident.\n     * @param timestamp The time when the incident was reported.\n     */\n    event IncidentReported(\n        uint256 indexed incidentId,\n        address indexed reporter,\n        uint256 timestamp\n    );\n\n    /**\n     * @notice Event emitted when a corroboration is added to an incident.\n     * @param incidentId The unique identifier for the incident.\n     * @param corroborator The address of the member adding the corroboration.\n     * @param timestamp The time when the corroboration was added.\n     */\n    event CorroborationAdded(\n        uint256 indexed incidentId,\n        address indexed corroborator,\n        uint256 timestamp\n    );\n\n    /**\n     * @notice Event emitted when an incident's verification status is updated.\n     * @param incidentId The unique identifier for the incident.\n     * @param status The new verification status (0: Unverified, 1: Verified, 2: Rejected).\n     * @param verifier The address of the entity that updated the status.\n     */\n    event IncidentStatusUpdated(\n        uint256 indexed incidentId,\n        uint8 status,\n        address indexed verifier\n    );\n}\n"
+			}
+		}
+	},
+	"output": {
+		"contracts": {
+			"contracts/IPadiProtocol.sol": {
+				"IPadiProtocol": {
+					"abi": [
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "lawyerAddress",
+									"type": "address"
+								},
+								{
+									"indexed": true,
+									"internalType": "uint256",
+									"name": "caseId",
+									"type": "uint256"
+								},
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "memberAddress",
+									"type": "address"
+								},
+								{
+									"indexed": false,
+									"internalType": "bool",
+									"name": "isEmergency",
+									"type": "bool"
+								}
+							],
+							"name": "CaseAdded",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "lawyerAddress",
+									"type": "address"
+								},
+								{
+									"indexed": true,
+									"internalType": "uint256",
+									"name": "caseId",
+									"type": "uint256"
+								}
+							],
+							"name": "CaseResolved",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "uint256",
+									"name": "incidentId",
+									"type": "uint256"
+								},
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "corroborator",
+									"type": "address"
+								},
+								{
+									"indexed": false,
+									"internalType": "uint256",
+									"name": "timestamp",
+									"type": "uint256"
+								}
+							],
+							"name": "CorroborationAdded",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "lawyerAddress",
+									"type": "address"
+								},
+								{
+									"indexed": true,
+									"internalType": "uint256",
+									"name": "caseId",
+									"type": "uint256"
+								},
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "memberAddress",
+									"type": "address"
+								},
+								{
+									"indexed": false,
+									"internalType": "uint256",
+									"name": "timestamp",
+									"type": "uint256"
+								}
+							],
+							"name": "EmergencyResponseConfirmed",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "uint256",
+									"name": "incidentId",
+									"type": "uint256"
+								},
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "reporter",
+									"type": "address"
+								},
+								{
+									"indexed": false,
+									"internalType": "uint256",
+									"name": "timestamp",
+									"type": "uint256"
+								}
+							],
+							"name": "IncidentReported",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "uint256",
+									"name": "incidentId",
+									"type": "uint256"
+								},
+								{
+									"indexed": false,
+									"internalType": "uint8",
+									"name": "status",
+									"type": "uint8"
+								},
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "verifier",
+									"type": "address"
+								}
+							],
+							"name": "IncidentStatusUpdated",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "lawyerAddress",
+									"type": "address"
+								},
+								{
+									"indexed": false,
+									"internalType": "uint256",
+									"name": "rewardAmount",
+									"type": "uint256"
+								},
+								{
+									"indexed": false,
+									"internalType": "uint256",
+									"name": "caseId",
+									"type": "uint256"
+								}
+							],
+							"name": "LawyerRewarded",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "lawyerAddress",
+									"type": "address"
+								}
+							],
+							"name": "LawyerSignedUp",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "memberAddress",
+									"type": "address"
+								},
+								{
+									"indexed": true,
+									"internalType": "uint256",
+									"name": "tokenId",
+									"type": "uint256"
+								}
+							],
+							"name": "MembershipNFTMinted",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "tokenAddress",
+									"type": "address"
+								}
+							],
+							"name": "PaymentTokenUpdated",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "memberAddress",
+									"type": "address"
+								},
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "representativeAddress",
+									"type": "address"
+								}
+							],
+							"name": "RepresentativeAssigned",
+							"type": "event"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "lawyerAddress",
+									"type": "address"
+								},
+								{
+									"internalType": "address",
+									"name": "memberAddress",
+									"type": "address"
+								},
+								{
+									"internalType": "string",
+									"name": "descriptionMetadata",
+									"type": "string"
+								},
+								{
+									"internalType": "uint256",
+									"name": "rewardAmount",
+									"type": "uint256"
+								},
+								{
+									"internalType": "bool",
+									"name": "isEmergency",
+									"type": "bool"
+								}
+							],
+							"name": "addCase",
+							"outputs": [],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "uint256",
+									"name": "incidentId",
+									"type": "uint256"
+								},
+								{
+									"internalType": "string",
+									"name": "comment",
+									"type": "string"
+								},
+								{
+									"internalType": "string[]",
+									"name": "mediaURIs",
+									"type": "string[]"
+								}
+							],
+							"name": "addCorroboration",
+							"outputs": [],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "memberAddress",
+									"type": "address"
+								},
+								{
+									"internalType": "address",
+									"name": "representativeAddress",
+									"type": "address"
+								}
+							],
+							"name": "assignRepresentative",
+							"outputs": [],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "memberAddress",
+									"type": "address"
+								},
+								{
+									"internalType": "uint256",
+									"name": "caseId",
+									"type": "uint256"
+								},
+								{
+									"internalType": "address",
+									"name": "lawyerAddress",
+									"type": "address"
+								}
+							],
+							"name": "confirmEmergencyResponse",
+							"outputs": [],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "lawyerAddress",
+									"type": "address"
+								}
+							],
+							"name": "getOpenCases",
+							"outputs": [
+								{
+									"internalType": "uint256[]",
+									"name": "caseIds",
+									"type": "uint256[]"
+								}
+							],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "memberAddress",
+									"type": "address"
+								}
+							],
+							"name": "getRepresentative",
+							"outputs": [
+								{
+									"internalType": "address",
+									"name": "representativeAddress",
+									"type": "address"
+								}
+							],
+							"stateMutability": "view",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "lawyerAddress",
+									"type": "address"
+								}
+							],
+							"name": "isLawyer",
+							"outputs": [
+								{
+									"internalType": "bool",
+									"name": "isRegistered",
+									"type": "bool"
+								}
+							],
+							"stateMutability": "view",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "memberAddress",
+									"type": "address"
+								}
+							],
+							"name": "isMember",
+							"outputs": [
+								{
+									"internalType": "bool",
+									"name": "isVerified",
+									"type": "bool"
+								}
+							],
+							"stateMutability": "view",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "memberAddress",
+									"type": "address"
+								},
+								{
+									"internalType": "string",
+									"name": "metadataURI",
+									"type": "string"
+								},
+								{
+									"internalType": "uint256",
+									"name": "paymentAmount",
+									"type": "uint256"
+								}
+							],
+							"name": "mintMembershipNFT",
+							"outputs": [],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "string",
+									"name": "descriptionMetadata",
+									"type": "string"
+								},
+								{
+									"internalType": "string[]",
+									"name": "mediaURIs",
+									"type": "string[]"
+								}
+							],
+							"name": "reportIncident",
+							"outputs": [
+								{
+									"internalType": "uint256",
+									"name": "incidentId",
+									"type": "uint256"
+								}
+							],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "lawyerAddress",
+									"type": "address"
+								},
+								{
+									"internalType": "uint256",
+									"name": "caseId",
+									"type": "uint256"
+								}
+							],
+							"name": "resolveCase",
+							"outputs": [],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "lawyerAddress",
+									"type": "address"
+								},
+								{
+									"internalType": "uint256",
+									"name": "caseId",
+									"type": "uint256"
+								},
+								{
+									"internalType": "uint256",
+									"name": "rewardAmount",
+									"type": "uint256"
+								}
+							],
+							"name": "rewardLawyerForEmergency",
+							"outputs": [],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "tokenAddress",
+									"type": "address"
+								}
+							],
+							"name": "setPaymentToken",
+							"outputs": [],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "lawyerAddress",
+									"type": "address"
+								},
+								{
+									"internalType": "string",
+									"name": "profileUri",
+									"type": "string"
+								}
+							],
+							"name": "signUpLawyer",
+							"outputs": [],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "uint256",
+									"name": "incidentId",
+									"type": "uint256"
+								},
+								{
+									"internalType": "uint8",
+									"name": "status",
+									"type": "uint8"
+								}
+							],
+							"name": "updateIncidentStatus",
+							"outputs": [],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						}
+					],
+					"devdoc": {
+						"events": {
+							"CaseAdded(address,uint256,address,bool)": {
+								"params": {
+									"caseId": "The unique identifier for the case.",
+									"lawyerAddress": "The address of the lawyer handling the case.",
+									"memberAddress": "The address of the member involved in the case."
+								}
+							},
+							"CaseResolved(address,uint256)": {
+								"params": {
+									"caseId": "The unique identifier for the case.",
+									"lawyerAddress": "The address of the lawyer handling the case."
+								}
+							},
+							"CorroborationAdded(uint256,address,uint256)": {
+								"params": {
+									"corroborator": "The address of the member adding the corroboration.",
+									"incidentId": "The unique identifier for the incident.",
+									"timestamp": "The time when the corroboration was added."
+								}
+							},
+							"EmergencyResponseConfirmed(address,uint256,address,uint256)": {
+								"params": {
+									"caseId": "The unique identifier for the case.",
+									"lawyerAddress": "The address of the lawyer responding to the emergency.",
+									"memberAddress": "The address of the member involved.",
+									"timestamp": "The time when the response was confirmed."
+								}
+							},
+							"IncidentReported(uint256,address,uint256)": {
+								"params": {
+									"incidentId": "The unique identifier for the incident.",
+									"reporter": "The address of the member reporting the incident.",
+									"timestamp": "The time when the incident was reported."
+								}
+							},
+							"IncidentStatusUpdated(uint256,uint8,address)": {
+								"params": {
+									"incidentId": "The unique identifier for the incident.",
+									"status": "The new verification status (0: Unverified, 1: Verified, 2: Rejected).",
+									"verifier": "The address of the entity that updated the status."
+								}
+							},
+							"LawyerRewarded(address,uint256,uint256)": {
+								"params": {
+									"caseId": "The unique identifier for the case.",
+									"lawyerAddress": "The address of the lawyer receiving the reward.",
+									"rewardAmount": "The amount of reward given to the lawyer."
+								}
+							},
+							"LawyerSignedUp(address)": {
+								"params": {
+									"lawyerAddress": "The address of the lawyer signing up."
+								}
+							},
+							"MembershipNFTMinted(address,uint256)": {
+								"params": {
+									"memberAddress": "The address of the new member.",
+									"tokenId": "The ID of the minted NFT."
+								}
+							},
+							"PaymentTokenUpdated(address)": {
+								"params": {
+									"tokenAddress": "The new token contract address."
+								}
+							},
+							"RepresentativeAssigned(address,address)": {
+								"params": {
+									"memberAddress": "The address of the member.",
+									"representativeAddress": "The address of the legal representative."
+								}
+							}
+						},
+						"kind": "dev",
+						"methods": {
+							"addCase(address,address,string,uint256,bool)": {
+								"params": {
+									"descriptionMetadata": "A URI describing the case.",
+									"lawyerAddress": "The address of the lawyer handling the case.",
+									"memberAddress": "The address of the member involved in the case.",
+									"rewardAmount": "The reward amount associated with the case."
+								}
+							},
+							"addCorroboration(uint256,string,string[])": {
+								"params": {
+									"comment": "A comment providing additional context.",
+									"incidentId": "The unique identifier for the incident.",
+									"mediaURIs": "An array of URIs pointing to supplementary evidence."
+								}
+							},
+							"assignRepresentative(address,address)": {
+								"params": {
+									"memberAddress": "The address of the member.",
+									"representativeAddress": "The address of the legal representative."
+								}
+							},
+							"confirmEmergencyResponse(address,uint256,address)": {
+								"params": {
+									"caseId": "The unique identifier for the case.",
+									"lawyerAddress": "The address of the lawyer (Padi) responding to the emergency.",
+									"memberAddress": "The address of the member calling for help."
+								}
+							},
+							"getOpenCases(address)": {
+								"params": {
+									"lawyerAddress": "The address of the lawyer."
+								},
+								"returns": {
+									"caseIds": "An array of unique identifiers for open cases."
+								}
+							},
+							"getRepresentative(address)": {
+								"params": {
+									"memberAddress": "The address of the member."
+								},
+								"returns": {
+									"representativeAddress": "The address of the legal representative."
+								}
+							},
+							"isLawyer(address)": {
+								"params": {
+									"lawyerAddress": "The address to check."
+								},
+								"returns": {
+									"isRegistered": "True if the address is a registered lawyer."
+								}
+							},
+							"isMember(address)": {
+								"params": {
+									"memberAddress": "The address to check."
+								},
+								"returns": {
+									"isVerified": "True if the address is a verified member."
+								}
+							},
+							"mintMembershipNFT(address,string,uint256)": {
+								"params": {
+									"memberAddress": "The address of the new member.",
+									"metadataURI": "The metadata URI for the NFT.",
+									"paymentAmount": "The amount of the specific token to be paid."
+								}
+							},
+							"reportIncident(string,string[])": {
+								"params": {
+									"descriptionMetadata": "A URI with details about the incident.",
+									"mediaURIs": "An array of URIs pointing to evidence (e.g., images, videos)."
+								},
+								"returns": {
+									"incidentId": "The unique identifier for the reported incident."
+								}
+							},
+							"resolveCase(address,uint256)": {
+								"params": {
+									"caseId": "The unique identifier for the case.",
+									"lawyerAddress": "The address of the lawyer handling the case."
+								}
+							},
+							"rewardLawyerForEmergency(address,uint256,uint256)": {
+								"params": {
+									"caseId": "The unique identifier for the case.",
+									"lawyerAddress": "The address of the lawyer (Padi).",
+									"rewardAmount": "The amount of tokens to reward the lawyer."
+								}
+							},
+							"setPaymentToken(address)": {
+								"params": {
+									"tokenAddress": "The address of the token contract."
+								}
+							},
+							"signUpLawyer(address,string)": {
+								"params": {
+									"lawyerAddress": "The address of the lawyer signing up.",
+									"profileUri": "The URI pointing to the lawyer's profile."
+								}
+							},
+							"updateIncidentStatus(uint256,uint8)": {
+								"params": {
+									"incidentId": "The unique identifier for the incident.",
+									"status": "The new verification status (0: Unverified, 1: Verified, 2: Rejected)."
+								}
+							}
+						},
+						"version": 1
+					},
+					"evm": {
+						"assembly": "",
+						"bytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"deployedBytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"immutableReferences": {},
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"gasEstimates": null,
+						"legacyAssembly": null,
+						"methodIdentifiers": {
+							"addCase(address,address,string,uint256,bool)": "6eb60a80",
+							"addCorroboration(uint256,string,string[])": "45db283d",
+							"assignRepresentative(address,address)": "4158c1b5",
+							"confirmEmergencyResponse(address,uint256,address)": "241f8715",
+							"getOpenCases(address)": "e1a9abf1",
+							"getRepresentative(address)": "edd501fa",
+							"isLawyer(address)": "5939a84e",
+							"isMember(address)": "a230c524",
+							"mintMembershipNFT(address,string,uint256)": "8baa5d8b",
+							"reportIncident(string,string[])": "f08aa69f",
+							"resolveCase(address,uint256)": "49678605",
+							"rewardLawyerForEmergency(address,uint256,uint256)": "aa9aa17a",
+							"setPaymentToken(address)": "6a326ab1",
+							"signUpLawyer(address,string)": "4b870a83",
+							"updateIncidentStatus(uint256,uint8)": "a3f8d8ed"
+						}
+					},
+					"metadata": "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"lawyerAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"caseId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"memberAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"isEmergency\",\"type\":\"bool\"}],\"name\":\"CaseAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"lawyerAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"caseId\",\"type\":\"uint256\"}],\"name\":\"CaseResolved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"incidentId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"corroborator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"CorroborationAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"lawyerAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"caseId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"memberAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"EmergencyResponseConfirmed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"incidentId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"reporter\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"IncidentReported\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"incidentId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"status\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"verifier\",\"type\":\"address\"}],\"name\":\"IncidentStatusUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"lawyerAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"rewardAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"caseId\",\"type\":\"uint256\"}],\"name\":\"LawyerRewarded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"lawyerAddress\",\"type\":\"address\"}],\"name\":\"LawyerSignedUp\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"memberAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"MembershipNFTMinted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"}],\"name\":\"PaymentTokenUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"memberAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"representativeAddress\",\"type\":\"address\"}],\"name\":\"RepresentativeAssigned\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lawyerAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"memberAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"descriptionMetadata\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"rewardAmount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isEmergency\",\"type\":\"bool\"}],\"name\":\"addCase\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"incidentId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"comment\",\"type\":\"string\"},{\"internalType\":\"string[]\",\"name\":\"mediaURIs\",\"type\":\"string[]\"}],\"name\":\"addCorroboration\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"memberAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"representativeAddress\",\"type\":\"address\"}],\"name\":\"assignRepresentative\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"memberAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"caseId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"lawyerAddress\",\"type\":\"address\"}],\"name\":\"confirmEmergencyResponse\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lawyerAddress\",\"type\":\"address\"}],\"name\":\"getOpenCases\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"caseIds\",\"type\":\"uint256[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"memberAddress\",\"type\":\"address\"}],\"name\":\"getRepresentative\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"representativeAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lawyerAddress\",\"type\":\"address\"}],\"name\":\"isLawyer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"isRegistered\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"memberAddress\",\"type\":\"address\"}],\"name\":\"isMember\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"isVerified\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"memberAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"metadataURI\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"paymentAmount\",\"type\":\"uint256\"}],\"name\":\"mintMembershipNFT\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"descriptionMetadata\",\"type\":\"string\"},{\"internalType\":\"string[]\",\"name\":\"mediaURIs\",\"type\":\"string[]\"}],\"name\":\"reportIncident\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"incidentId\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lawyerAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"caseId\",\"type\":\"uint256\"}],\"name\":\"resolveCase\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lawyerAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"caseId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"rewardAmount\",\"type\":\"uint256\"}],\"name\":\"rewardLawyerForEmergency\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"}],\"name\":\"setPaymentToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lawyerAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"profileUri\",\"type\":\"string\"}],\"name\":\"signUpLawyer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"incidentId\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"status\",\"type\":\"uint8\"}],\"name\":\"updateIncidentStatus\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"events\":{\"CaseAdded(address,uint256,address,bool)\":{\"params\":{\"caseId\":\"The unique identifier for the case.\",\"lawyerAddress\":\"The address of the lawyer handling the case.\",\"memberAddress\":\"The address of the member involved in the case.\"}},\"CaseResolved(address,uint256)\":{\"params\":{\"caseId\":\"The unique identifier for the case.\",\"lawyerAddress\":\"The address of the lawyer handling the case.\"}},\"CorroborationAdded(uint256,address,uint256)\":{\"params\":{\"corroborator\":\"The address of the member adding the corroboration.\",\"incidentId\":\"The unique identifier for the incident.\",\"timestamp\":\"The time when the corroboration was added.\"}},\"EmergencyResponseConfirmed(address,uint256,address,uint256)\":{\"params\":{\"caseId\":\"The unique identifier for the case.\",\"lawyerAddress\":\"The address of the lawyer responding to the emergency.\",\"memberAddress\":\"The address of the member involved.\",\"timestamp\":\"The time when the response was confirmed.\"}},\"IncidentReported(uint256,address,uint256)\":{\"params\":{\"incidentId\":\"The unique identifier for the incident.\",\"reporter\":\"The address of the member reporting the incident.\",\"timestamp\":\"The time when the incident was reported.\"}},\"IncidentStatusUpdated(uint256,uint8,address)\":{\"params\":{\"incidentId\":\"The unique identifier for the incident.\",\"status\":\"The new verification status (0: Unverified, 1: Verified, 2: Rejected).\",\"verifier\":\"The address of the entity that updated the status.\"}},\"LawyerRewarded(address,uint256,uint256)\":{\"params\":{\"caseId\":\"The unique identifier for the case.\",\"lawyerAddress\":\"The address of the lawyer receiving the reward.\",\"rewardAmount\":\"The amount of reward given to the lawyer.\"}},\"LawyerSignedUp(address)\":{\"params\":{\"lawyerAddress\":\"The address of the lawyer signing up.\"}},\"MembershipNFTMinted(address,uint256)\":{\"params\":{\"memberAddress\":\"The address of the new member.\",\"tokenId\":\"The ID of the minted NFT.\"}},\"PaymentTokenUpdated(address)\":{\"params\":{\"tokenAddress\":\"The new token contract address.\"}},\"RepresentativeAssigned(address,address)\":{\"params\":{\"memberAddress\":\"The address of the member.\",\"representativeAddress\":\"The address of the legal representative.\"}}},\"kind\":\"dev\",\"methods\":{\"addCase(address,address,string,uint256,bool)\":{\"params\":{\"descriptionMetadata\":\"A URI describing the case.\",\"lawyerAddress\":\"The address of the lawyer handling the case.\",\"memberAddress\":\"The address of the member involved in the case.\",\"rewardAmount\":\"The reward amount associated with the case.\"}},\"addCorroboration(uint256,string,string[])\":{\"params\":{\"comment\":\"A comment providing additional context.\",\"incidentId\":\"The unique identifier for the incident.\",\"mediaURIs\":\"An array of URIs pointing to supplementary evidence.\"}},\"assignRepresentative(address,address)\":{\"params\":{\"memberAddress\":\"The address of the member.\",\"representativeAddress\":\"The address of the legal representative.\"}},\"confirmEmergencyResponse(address,uint256,address)\":{\"params\":{\"caseId\":\"The unique identifier for the case.\",\"lawyerAddress\":\"The address of the lawyer (Padi) responding to the emergency.\",\"memberAddress\":\"The address of the member calling for help.\"}},\"getOpenCases(address)\":{\"params\":{\"lawyerAddress\":\"The address of the lawyer.\"},\"returns\":{\"caseIds\":\"An array of unique identifiers for open cases.\"}},\"getRepresentative(address)\":{\"params\":{\"memberAddress\":\"The address of the member.\"},\"returns\":{\"representativeAddress\":\"The address of the legal representative.\"}},\"isLawyer(address)\":{\"params\":{\"lawyerAddress\":\"The address to check.\"},\"returns\":{\"isRegistered\":\"True if the address is a registered lawyer.\"}},\"isMember(address)\":{\"params\":{\"memberAddress\":\"The address to check.\"},\"returns\":{\"isVerified\":\"True if the address is a verified member.\"}},\"mintMembershipNFT(address,string,uint256)\":{\"params\":{\"memberAddress\":\"The address of the new member.\",\"metadataURI\":\"The metadata URI for the NFT.\",\"paymentAmount\":\"The amount of the specific token to be paid.\"}},\"reportIncident(string,string[])\":{\"params\":{\"descriptionMetadata\":\"A URI with details about the incident.\",\"mediaURIs\":\"An array of URIs pointing to evidence (e.g., images, videos).\"},\"returns\":{\"incidentId\":\"The unique identifier for the reported incident.\"}},\"resolveCase(address,uint256)\":{\"params\":{\"caseId\":\"The unique identifier for the case.\",\"lawyerAddress\":\"The address of the lawyer handling the case.\"}},\"rewardLawyerForEmergency(address,uint256,uint256)\":{\"params\":{\"caseId\":\"The unique identifier for the case.\",\"lawyerAddress\":\"The address of the lawyer (Padi).\",\"rewardAmount\":\"The amount of tokens to reward the lawyer.\"}},\"setPaymentToken(address)\":{\"params\":{\"tokenAddress\":\"The address of the token contract.\"}},\"signUpLawyer(address,string)\":{\"params\":{\"lawyerAddress\":\"The address of the lawyer signing up.\",\"profileUri\":\"The URI pointing to the lawyer's profile.\"}},\"updateIncidentStatus(uint256,uint8)\":{\"params\":{\"incidentId\":\"The unique identifier for the incident.\",\"status\":\"The new verification status (0: Unverified, 1: Verified, 2: Rejected).\"}}},\"version\":1},\"userdoc\":{\"events\":{\"CaseAdded(address,uint256,address,bool)\":{\"notice\":\"Event emitted when a new case is added for a lawyer.\"},\"CaseResolved(address,uint256)\":{\"notice\":\"Event emitted when a case is resolved for a lawyer.\"},\"CorroborationAdded(uint256,address,uint256)\":{\"notice\":\"Event emitted when a corroboration is added to an incident.\"},\"EmergencyResponseConfirmed(address,uint256,address,uint256)\":{\"notice\":\"Event emitted when an emergency response is confirmed by a lawyer.\"},\"IncidentReported(uint256,address,uint256)\":{\"notice\":\"Event emitted when a new incident is reported.\"},\"IncidentStatusUpdated(uint256,uint8,address)\":{\"notice\":\"Event emitted when an incident's verification status is updated.\"},\"LawyerRewarded(address,uint256,uint256)\":{\"notice\":\"Event emitted when a lawyer is rewarded after confirming an emergency response.\"},\"LawyerSignedUp(address)\":{\"notice\":\"Event emitted when a lawyer signs up as a legal representative.\"},\"MembershipNFTMinted(address,uint256)\":{\"notice\":\"Event emitted when a membership NFT is minted.\"},\"PaymentTokenUpdated(address)\":{\"notice\":\"Event emitted when the payment token is updated.\"},\"RepresentativeAssigned(address,address)\":{\"notice\":\"Event emitted when a legal representative is assigned to a member.\"}},\"kind\":\"user\",\"methods\":{\"addCase(address,address,string,uint256,bool)\":{\"notice\":\"Track a new case for a lawyer.\"},\"addCorroboration(uint256,string,string[])\":{\"notice\":\"Add a corroboration (supporting evidence) to an existing incident.\"},\"assignRepresentative(address,address)\":{\"notice\":\"Assign a legal representative (Padi) to a member.\"},\"confirmEmergencyResponse(address,uint256,address)\":{\"notice\":\"Confirm that a lawyer (Padi) has responded to an emergency call from a member.\"},\"getOpenCases(address)\":{\"notice\":\"Get the list of open cases for a lawyer.\"},\"getRepresentative(address)\":{\"notice\":\"Get the legal representative of a member.\"},\"isLawyer(address)\":{\"notice\":\"Check if an address is a registered lawyer.\"},\"isMember(address)\":{\"notice\":\"Check if an address is a verified member.\"},\"mintMembershipNFT(address,string,uint256)\":{\"notice\":\"Mint an NFT ID card for a new member.\"},\"reportIncident(string,string[])\":{\"notice\":\"Report a new incident of abuse or misconduct.\"},\"resolveCase(address,uint256)\":{\"notice\":\"Mark a case as resolved for a lawyer.\"},\"rewardLawyerForEmergency(address,uint256,uint256)\":{\"notice\":\"Reward a lawyer (Padi) after confirming their response to an emergency.\"},\"setPaymentToken(address)\":{\"notice\":\"Set the token contract address used for payments.\"},\"signUpLawyer(address,string)\":{\"notice\":\"Sign up a lawyer as a legal representative.\"},\"updateIncidentStatus(uint256,uint8)\":{\"notice\":\"Update the verification status of an incident.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/IPadiProtocol.sol\":\"IPadiProtocol\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/IPadiProtocol.sol\":{\"keccak256\":\"0x4d6721a1e82e7575ae0e45fef5a5536dd4735a8ab9393f70601241ce82883a34\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a98e0018444f60b79f3ae9adef165453817e7ec4386d2b268fae340d8c6ff8b8\",\"dweb:/ipfs/QmfSiFXizNc2ktVYzs6d93Gh5bku6L4ZHdTSGS7kfZDLDU\"]}},\"version\":1}",
+					"storageLayout": {
+						"storage": [],
+						"types": null
+					},
+					"userdoc": {
+						"events": {
+							"CaseAdded(address,uint256,address,bool)": {
+								"notice": "Event emitted when a new case is added for a lawyer."
+							},
+							"CaseResolved(address,uint256)": {
+								"notice": "Event emitted when a case is resolved for a lawyer."
+							},
+							"CorroborationAdded(uint256,address,uint256)": {
+								"notice": "Event emitted when a corroboration is added to an incident."
+							},
+							"EmergencyResponseConfirmed(address,uint256,address,uint256)": {
+								"notice": "Event emitted when an emergency response is confirmed by a lawyer."
+							},
+							"IncidentReported(uint256,address,uint256)": {
+								"notice": "Event emitted when a new incident is reported."
+							},
+							"IncidentStatusUpdated(uint256,uint8,address)": {
+								"notice": "Event emitted when an incident's verification status is updated."
+							},
+							"LawyerRewarded(address,uint256,uint256)": {
+								"notice": "Event emitted when a lawyer is rewarded after confirming an emergency response."
+							},
+							"LawyerSignedUp(address)": {
+								"notice": "Event emitted when a lawyer signs up as a legal representative."
+							},
+							"MembershipNFTMinted(address,uint256)": {
+								"notice": "Event emitted when a membership NFT is minted."
+							},
+							"PaymentTokenUpdated(address)": {
+								"notice": "Event emitted when the payment token is updated."
+							},
+							"RepresentativeAssigned(address,address)": {
+								"notice": "Event emitted when a legal representative is assigned to a member."
+							}
+						},
+						"kind": "user",
+						"methods": {
+							"addCase(address,address,string,uint256,bool)": {
+								"notice": "Track a new case for a lawyer."
+							},
+							"addCorroboration(uint256,string,string[])": {
+								"notice": "Add a corroboration (supporting evidence) to an existing incident."
+							},
+							"assignRepresentative(address,address)": {
+								"notice": "Assign a legal representative (Padi) to a member."
+							},
+							"confirmEmergencyResponse(address,uint256,address)": {
+								"notice": "Confirm that a lawyer (Padi) has responded to an emergency call from a member."
+							},
+							"getOpenCases(address)": {
+								"notice": "Get the list of open cases for a lawyer."
+							},
+							"getRepresentative(address)": {
+								"notice": "Get the legal representative of a member."
+							},
+							"isLawyer(address)": {
+								"notice": "Check if an address is a registered lawyer."
+							},
+							"isMember(address)": {
+								"notice": "Check if an address is a verified member."
+							},
+							"mintMembershipNFT(address,string,uint256)": {
+								"notice": "Mint an NFT ID card for a new member."
+							},
+							"reportIncident(string,string[])": {
+								"notice": "Report a new incident of abuse or misconduct."
+							},
+							"resolveCase(address,uint256)": {
+								"notice": "Mark a case as resolved for a lawyer."
+							},
+							"rewardLawyerForEmergency(address,uint256,uint256)": {
+								"notice": "Reward a lawyer (Padi) after confirming their response to an emergency."
+							},
+							"setPaymentToken(address)": {
+								"notice": "Set the token contract address used for payments."
+							},
+							"signUpLawyer(address,string)": {
+								"notice": "Sign up a lawyer as a legal representative."
+							},
+							"updateIncidentStatus(uint256,uint8)": {
+								"notice": "Update the verification status of an incident."
+							}
+						},
+						"version": 1
+					}
+				}
+			}
+		},
+		"sources": {
+			"contracts/IPadiProtocol.sol": {
+				"ast": {
+					"absolutePath": "contracts/IPadiProtocol.sol",
+					"exportedSymbols": {
+						"IPadiProtocol": [
+							228
+						]
+					},
+					"id": 229,
+					"license": "MIT",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 1,
+							"literals": [
+								"solidity",
+								"^",
+								"0.8",
+								".0"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "32:23:0"
+						},
+						{
+							"abstract": false,
+							"baseContracts": [],
+							"canonicalName": "IPadiProtocol",
+							"contractDependencies": [],
+							"contractKind": "interface",
+							"fullyImplemented": false,
+							"id": 228,
+							"linearizedBaseContracts": [
+								228
+							],
+							"name": "IPadiProtocol",
+							"nameLocation": "67:13:0",
+							"nodeType": "ContractDefinition",
+							"nodes": [
+								{
+									"documentation": {
+										"id": 2,
+										"nodeType": "StructuredDocumentation",
+										"src": "87:252:0",
+										"text": " @notice Mint an NFT ID card for a new member.\n @param memberAddress The address of the new member.\n @param metadataURI The metadata URI for the NFT.\n @param paymentAmount The amount of the specific token to be paid."
+									},
+									"functionSelector": "8baa5d8b",
+									"id": 11,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "mintMembershipNFT",
+									"nameLocation": "353:17:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 9,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 4,
+												"mutability": "mutable",
+												"name": "memberAddress",
+												"nameLocation": "388:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 11,
+												"src": "380:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 3,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "380:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 6,
+												"mutability": "mutable",
+												"name": "metadataURI",
+												"nameLocation": "427:11:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 11,
+												"src": "411:27:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_string_calldata_ptr",
+													"typeString": "string"
+												},
+												"typeName": {
+													"id": 5,
+													"name": "string",
+													"nodeType": "ElementaryTypeName",
+													"src": "411:6:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_string_storage_ptr",
+														"typeString": "string"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 8,
+												"mutability": "mutable",
+												"name": "paymentAmount",
+												"nameLocation": "456:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 11,
+												"src": "448:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 7,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "448:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "370:105:0"
+									},
+									"returnParameters": {
+										"id": 10,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "484:0:0"
+									},
+									"scope": 228,
+									"src": "344:141:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 12,
+										"nodeType": "StructuredDocumentation",
+										"src": "491:208:0",
+										"text": " @notice Assign a legal representative (Padi) to a member.\n @param memberAddress The address of the member.\n @param representativeAddress The address of the legal representative."
+									},
+									"functionSelector": "4158c1b5",
+									"id": 19,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "assignRepresentative",
+									"nameLocation": "713:20:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 17,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 14,
+												"mutability": "mutable",
+												"name": "memberAddress",
+												"nameLocation": "751:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 19,
+												"src": "743:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 13,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "743:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 16,
+												"mutability": "mutable",
+												"name": "representativeAddress",
+												"nameLocation": "782:21:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 19,
+												"src": "774:29:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 15,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "774:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "733:76:0"
+									},
+									"returnParameters": {
+										"id": 18,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "818:0:0"
+									},
+									"scope": 228,
+									"src": "704:115:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 20,
+										"nodeType": "StructuredDocumentation",
+										"src": "825:324:0",
+										"text": " @notice Confirm that a lawyer (Padi) has responded to an emergency call from a member.\n @param memberAddress The address of the member calling for help.\n @param caseId The unique identifier for the case.\n @param lawyerAddress The address of the lawyer (Padi) responding to the emergency."
+									},
+									"functionSelector": "241f8715",
+									"id": 29,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "confirmEmergencyResponse",
+									"nameLocation": "1163:24:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 27,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 22,
+												"mutability": "mutable",
+												"name": "memberAddress",
+												"nameLocation": "1205:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 29,
+												"src": "1197:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 21,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "1197:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 24,
+												"mutability": "mutable",
+												"name": "caseId",
+												"nameLocation": "1236:6:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 29,
+												"src": "1228:14:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 23,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "1228:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 26,
+												"mutability": "mutable",
+												"name": "lawyerAddress",
+												"nameLocation": "1260:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 29,
+												"src": "1252:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 25,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "1252:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "1187:92:0"
+									},
+									"returnParameters": {
+										"id": 28,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "1288:0:0"
+									},
+									"scope": 228,
+									"src": "1154:135:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 30,
+										"nodeType": "StructuredDocumentation",
+										"src": "1295:287:0",
+										"text": " @notice Reward a lawyer (Padi) after confirming their response to an emergency.\n @param lawyerAddress The address of the lawyer (Padi).\n @param caseId The unique identifier for the case.\n @param rewardAmount The amount of tokens to reward the lawyer."
+									},
+									"functionSelector": "aa9aa17a",
+									"id": 39,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "rewardLawyerForEmergency",
+									"nameLocation": "1596:24:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 37,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 32,
+												"mutability": "mutable",
+												"name": "lawyerAddress",
+												"nameLocation": "1638:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 39,
+												"src": "1630:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 31,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "1630:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 34,
+												"mutability": "mutable",
+												"name": "caseId",
+												"nameLocation": "1669:6:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 39,
+												"src": "1661:14:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 33,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "1661:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 36,
+												"mutability": "mutable",
+												"name": "rewardAmount",
+												"nameLocation": "1693:12:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 39,
+												"src": "1685:20:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 35,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "1685:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "1620:91:0"
+									},
+									"returnParameters": {
+										"id": 38,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "1720:0:0"
+									},
+									"scope": 228,
+									"src": "1587:134:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 40,
+										"nodeType": "StructuredDocumentation",
+										"src": "1727:203:0",
+										"text": " @notice Sign up a lawyer as a legal representative.\n @param lawyerAddress The address of the lawyer signing up.\n @param profileUri The URI pointing to the lawyer's profile."
+									},
+									"functionSelector": "4b870a83",
+									"id": 47,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "signUpLawyer",
+									"nameLocation": "1944:12:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 45,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 42,
+												"mutability": "mutable",
+												"name": "lawyerAddress",
+												"nameLocation": "1974:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 47,
+												"src": "1966:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 41,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "1966:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 44,
+												"mutability": "mutable",
+												"name": "profileUri",
+												"nameLocation": "2013:10:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 47,
+												"src": "1997:26:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_string_calldata_ptr",
+													"typeString": "string"
+												},
+												"typeName": {
+													"id": 43,
+													"name": "string",
+													"nodeType": "ElementaryTypeName",
+													"src": "1997:6:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_string_storage_ptr",
+														"typeString": "string"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "1956:73:0"
+									},
+									"returnParameters": {
+										"id": 46,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "2038:0:0"
+									},
+									"scope": 228,
+									"src": "1935:104:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 48,
+										"nodeType": "StructuredDocumentation",
+										"src": "2045:338:0",
+										"text": " @notice Track a new case for a lawyer.\n @param lawyerAddress The address of the lawyer handling the case.\n @param memberAddress The address of the member involved in the case.\n @param descriptionMetadata A URI describing the case.\n @param rewardAmount The reward amount associated with the case."
+									},
+									"functionSelector": "6eb60a80",
+									"id": 61,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "addCase",
+									"nameLocation": "2397:7:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 59,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 50,
+												"mutability": "mutable",
+												"name": "lawyerAddress",
+												"nameLocation": "2422:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 61,
+												"src": "2414:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 49,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "2414:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 52,
+												"mutability": "mutable",
+												"name": "memberAddress",
+												"nameLocation": "2453:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 61,
+												"src": "2445:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 51,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "2445:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 54,
+												"mutability": "mutable",
+												"name": "descriptionMetadata",
+												"nameLocation": "2492:19:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 61,
+												"src": "2476:35:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_string_calldata_ptr",
+													"typeString": "string"
+												},
+												"typeName": {
+													"id": 53,
+													"name": "string",
+													"nodeType": "ElementaryTypeName",
+													"src": "2476:6:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_string_storage_ptr",
+														"typeString": "string"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 56,
+												"mutability": "mutable",
+												"name": "rewardAmount",
+												"nameLocation": "2529:12:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 61,
+												"src": "2521:20:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 55,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "2521:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 58,
+												"mutability": "mutable",
+												"name": "isEmergency",
+												"nameLocation": "2556:11:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 61,
+												"src": "2551:16:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bool",
+													"typeString": "bool"
+												},
+												"typeName": {
+													"id": 57,
+													"name": "bool",
+													"nodeType": "ElementaryTypeName",
+													"src": "2551:4:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bool",
+														"typeString": "bool"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "2404:169:0"
+									},
+									"returnParameters": {
+										"id": 60,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "2582:0:0"
+									},
+									"scope": 228,
+									"src": "2388:195:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 62,
+										"nodeType": "StructuredDocumentation",
+										"src": "2589:194:0",
+										"text": " @notice Mark a case as resolved for a lawyer.\n @param lawyerAddress The address of the lawyer handling the case.\n @param caseId The unique identifier for the case."
+									},
+									"functionSelector": "49678605",
+									"id": 69,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "resolveCase",
+									"nameLocation": "2797:11:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 67,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 64,
+												"mutability": "mutable",
+												"name": "lawyerAddress",
+												"nameLocation": "2817:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 69,
+												"src": "2809:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 63,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "2809:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 66,
+												"mutability": "mutable",
+												"name": "caseId",
+												"nameLocation": "2840:6:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 69,
+												"src": "2832:14:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 65,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "2832:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "2808:39:0"
+									},
+									"returnParameters": {
+										"id": 68,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "2856:0:0"
+									},
+									"scope": 228,
+									"src": "2788:69:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 70,
+										"nodeType": "StructuredDocumentation",
+										"src": "2863:192:0",
+										"text": " @notice Get the list of open cases for a lawyer.\n @param lawyerAddress The address of the lawyer.\n @return caseIds An array of unique identifiers for open cases."
+									},
+									"functionSelector": "e1a9abf1",
+									"id": 78,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "getOpenCases",
+									"nameLocation": "3069:12:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 73,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 72,
+												"mutability": "mutable",
+												"name": "lawyerAddress",
+												"nameLocation": "3099:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 78,
+												"src": "3091:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 71,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "3091:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3081:37:0"
+									},
+									"returnParameters": {
+										"id": 77,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 76,
+												"mutability": "mutable",
+												"name": "caseIds",
+												"nameLocation": "3154:7:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 78,
+												"src": "3137:24:0",
+												"stateVariable": false,
+												"storageLocation": "memory",
+												"typeDescriptions": {
+													"typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+													"typeString": "uint256[]"
+												},
+												"typeName": {
+													"baseType": {
+														"id": 74,
+														"name": "uint256",
+														"nodeType": "ElementaryTypeName",
+														"src": "3137:7:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_uint256",
+															"typeString": "uint256"
+														}
+													},
+													"id": 75,
+													"nodeType": "ArrayTypeName",
+													"src": "3137:9:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+														"typeString": "uint256[]"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3136:26:0"
+									},
+									"scope": 228,
+									"src": "3060:103:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 79,
+										"nodeType": "StructuredDocumentation",
+										"src": "3169:186:0",
+										"text": " @notice Check if an address is a verified member.\n @param memberAddress The address to check.\n @return isVerified True if the address is a verified member."
+									},
+									"functionSelector": "a230c524",
+									"id": 86,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "isMember",
+									"nameLocation": "3369:8:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 82,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 81,
+												"mutability": "mutable",
+												"name": "memberAddress",
+												"nameLocation": "3395:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 86,
+												"src": "3387:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 80,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "3387:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3377:37:0"
+									},
+									"returnParameters": {
+										"id": 85,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 84,
+												"mutability": "mutable",
+												"name": "isVerified",
+												"nameLocation": "3443:10:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 86,
+												"src": "3438:15:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bool",
+													"typeString": "bool"
+												},
+												"typeName": {
+													"id": 83,
+													"name": "bool",
+													"nodeType": "ElementaryTypeName",
+													"src": "3438:4:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bool",
+														"typeString": "bool"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3437:17:0"
+									},
+									"scope": 228,
+									"src": "3360:95:0",
+									"stateMutability": "view",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 87,
+										"nodeType": "StructuredDocumentation",
+										"src": "3461:192:0",
+										"text": " @notice Check if an address is a registered lawyer.\n @param lawyerAddress The address to check.\n @return isRegistered True if the address is a registered lawyer."
+									},
+									"functionSelector": "5939a84e",
+									"id": 94,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "isLawyer",
+									"nameLocation": "3667:8:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 90,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 89,
+												"mutability": "mutable",
+												"name": "lawyerAddress",
+												"nameLocation": "3693:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 94,
+												"src": "3685:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 88,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "3685:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3675:37:0"
+									},
+									"returnParameters": {
+										"id": 93,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 92,
+												"mutability": "mutable",
+												"name": "isRegistered",
+												"nameLocation": "3741:12:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 94,
+												"src": "3736:17:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bool",
+													"typeString": "bool"
+												},
+												"typeName": {
+													"id": 91,
+													"name": "bool",
+													"nodeType": "ElementaryTypeName",
+													"src": "3736:4:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bool",
+														"typeString": "bool"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3735:19:0"
+									},
+									"scope": 228,
+									"src": "3658:97:0",
+									"stateMutability": "view",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 95,
+										"nodeType": "StructuredDocumentation",
+										"src": "3761:201:0",
+										"text": " @notice Get the legal representative of a member.\n @param memberAddress The address of the member.\n @return representativeAddress The address of the legal representative."
+									},
+									"functionSelector": "edd501fa",
+									"id": 102,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "getRepresentative",
+									"nameLocation": "3976:17:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 98,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 97,
+												"mutability": "mutable",
+												"name": "memberAddress",
+												"nameLocation": "4011:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 102,
+												"src": "4003:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 96,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "4003:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3993:37:0"
+									},
+									"returnParameters": {
+										"id": 101,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 100,
+												"mutability": "mutable",
+												"name": "representativeAddress",
+												"nameLocation": "4062:21:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 102,
+												"src": "4054:29:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 99,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "4054:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "4053:31:0"
+									},
+									"scope": 228,
+									"src": "3967:118:0",
+									"stateMutability": "view",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 103,
+										"nodeType": "StructuredDocumentation",
+										"src": "4091:138:0",
+										"text": " @notice Set the token contract address used for payments.\n @param tokenAddress The address of the token contract."
+									},
+									"functionSelector": "6a326ab1",
+									"id": 108,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "setPaymentToken",
+									"nameLocation": "4243:15:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 106,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 105,
+												"mutability": "mutable",
+												"name": "tokenAddress",
+												"nameLocation": "4267:12:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 108,
+												"src": "4259:20:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 104,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "4259:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "4258:22:0"
+									},
+									"returnParameters": {
+										"id": 107,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "4289:0:0"
+									},
+									"scope": 228,
+									"src": "4234:56:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 109,
+										"nodeType": "StructuredDocumentation",
+										"src": "4534:306:0",
+										"text": " @notice Report a new incident of abuse or misconduct.\n @param descriptionMetadata A URI with details about the incident.\n @param mediaURIs An array of URIs pointing to evidence (e.g., images, videos).\n @return incidentId The unique identifier for the reported incident."
+									},
+									"functionSelector": "f08aa69f",
+									"id": 119,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "reportIncident",
+									"nameLocation": "4854:14:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 115,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 111,
+												"mutability": "mutable",
+												"name": "descriptionMetadata",
+												"nameLocation": "4894:19:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 119,
+												"src": "4878:35:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_string_calldata_ptr",
+													"typeString": "string"
+												},
+												"typeName": {
+													"id": 110,
+													"name": "string",
+													"nodeType": "ElementaryTypeName",
+													"src": "4878:6:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_string_storage_ptr",
+														"typeString": "string"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 114,
+												"mutability": "mutable",
+												"name": "mediaURIs",
+												"nameLocation": "4941:9:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 119,
+												"src": "4923:27:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_array$_t_string_calldata_ptr_$dyn_calldata_ptr",
+													"typeString": "string[]"
+												},
+												"typeName": {
+													"baseType": {
+														"id": 112,
+														"name": "string",
+														"nodeType": "ElementaryTypeName",
+														"src": "4923:6:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_string_storage_ptr",
+															"typeString": "string"
+														}
+													},
+													"id": 113,
+													"nodeType": "ArrayTypeName",
+													"src": "4923:8:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_array$_t_string_storage_$dyn_storage_ptr",
+														"typeString": "string[]"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "4868:88:0"
+									},
+									"returnParameters": {
+										"id": 118,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 117,
+												"mutability": "mutable",
+												"name": "incidentId",
+												"nameLocation": "4983:10:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 119,
+												"src": "4975:18:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 116,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "4975:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "4974:20:0"
+									},
+									"scope": 228,
+									"src": "4845:150:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 120,
+										"nodeType": "StructuredDocumentation",
+										"src": "5001:297:0",
+										"text": " @notice Add a corroboration (supporting evidence) to an existing incident.\n @param incidentId The unique identifier for the incident.\n @param comment A comment providing additional context.\n @param mediaURIs An array of URIs pointing to supplementary evidence."
+									},
+									"functionSelector": "45db283d",
+									"id": 130,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "addCorroboration",
+									"nameLocation": "5312:16:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 128,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 122,
+												"mutability": "mutable",
+												"name": "incidentId",
+												"nameLocation": "5346:10:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 130,
+												"src": "5338:18:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 121,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "5338:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 124,
+												"mutability": "mutable",
+												"name": "comment",
+												"nameLocation": "5382:7:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 130,
+												"src": "5366:23:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_string_calldata_ptr",
+													"typeString": "string"
+												},
+												"typeName": {
+													"id": 123,
+													"name": "string",
+													"nodeType": "ElementaryTypeName",
+													"src": "5366:6:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_string_storage_ptr",
+														"typeString": "string"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 127,
+												"mutability": "mutable",
+												"name": "mediaURIs",
+												"nameLocation": "5417:9:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 130,
+												"src": "5399:27:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_array$_t_string_calldata_ptr_$dyn_calldata_ptr",
+													"typeString": "string[]"
+												},
+												"typeName": {
+													"baseType": {
+														"id": 125,
+														"name": "string",
+														"nodeType": "ElementaryTypeName",
+														"src": "5399:6:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_string_storage_ptr",
+															"typeString": "string"
+														}
+													},
+													"id": 126,
+													"nodeType": "ArrayTypeName",
+													"src": "5399:8:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_array$_t_string_storage_$dyn_storage_ptr",
+														"typeString": "string[]"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "5328:104:0"
+									},
+									"returnParameters": {
+										"id": 129,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "5441:0:0"
+									},
+									"scope": 228,
+									"src": "5303:139:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 131,
+										"nodeType": "StructuredDocumentation",
+										"src": "5448:230:0",
+										"text": " @notice Update the verification status of an incident.\n @param incidentId The unique identifier for the incident.\n @param status The new verification status (0: Unverified, 1: Verified, 2: Rejected)."
+									},
+									"functionSelector": "a3f8d8ed",
+									"id": 138,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "updateIncidentStatus",
+									"nameLocation": "5692:20:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 136,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 133,
+												"mutability": "mutable",
+												"name": "incidentId",
+												"nameLocation": "5730:10:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 138,
+												"src": "5722:18:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 132,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "5722:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 135,
+												"mutability": "mutable",
+												"name": "status",
+												"nameLocation": "5756:6:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 138,
+												"src": "5750:12:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint8",
+													"typeString": "uint8"
+												},
+												"typeName": {
+													"id": 134,
+													"name": "uint8",
+													"nodeType": "ElementaryTypeName",
+													"src": "5750:5:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint8",
+														"typeString": "uint8"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "5712:56:0"
+									},
+									"returnParameters": {
+										"id": 137,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "5777:0:0"
+									},
+									"scope": 228,
+									"src": "5683:95:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 139,
+										"nodeType": "StructuredDocumentation",
+										"src": "6004:180:0",
+										"text": " @notice Event emitted when a membership NFT is minted.\n @param memberAddress The address of the new member.\n @param tokenId The ID of the minted NFT."
+									},
+									"eventSelector": "0ff8d95af74a8c072247e3c2b5e73ab929e2eb87e62682f83f5707bc5bc4a759",
+									"id": 145,
+									"name": "MembershipNFTMinted",
+									"nameLocation": "6195:19:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 144,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 141,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "memberAddress",
+												"nameLocation": "6240:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 145,
+												"src": "6224:29:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 140,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "6224:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 143,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "tokenId",
+												"nameLocation": "6279:7:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 145,
+												"src": "6263:23:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 142,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "6263:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "6214:78:0"
+									},
+									"src": "6189:104:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 146,
+										"nodeType": "StructuredDocumentation",
+										"src": "6299:225:0",
+										"text": " @notice Event emitted when a legal representative is assigned to a member.\n @param memberAddress The address of the member.\n @param representativeAddress The address of the legal representative."
+									},
+									"eventSelector": "f53ec35310a21208780fc7b462ee5d0a47d8ae1c3aa5e0ecdab144ff78dea3a8",
+									"id": 152,
+									"name": "RepresentativeAssigned",
+									"nameLocation": "6535:22:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 151,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 148,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "memberAddress",
+												"nameLocation": "6583:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 152,
+												"src": "6567:29:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 147,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "6567:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 150,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "representativeAddress",
+												"nameLocation": "6622:21:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 152,
+												"src": "6606:37:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 149,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "6606:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "6557:92:0"
+									},
+									"src": "6529:121:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 153,
+										"nodeType": "StructuredDocumentation",
+										"src": "6656:308:0",
+										"text": " @notice Event emitted when a lawyer is rewarded after confirming an emergency response.\n @param lawyerAddress The address of the lawyer receiving the reward.\n @param rewardAmount The amount of reward given to the lawyer.\n @param caseId The unique identifier for the case."
+									},
+									"eventSelector": "09bc545157f97ca1d7d6020a624c818e914739c4a4f4203f263439ed019ac270",
+									"id": 161,
+									"name": "LawyerRewarded",
+									"nameLocation": "6975:14:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 160,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 155,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "lawyerAddress",
+												"nameLocation": "7015:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 161,
+												"src": "6999:29:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 154,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "6999:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 157,
+												"indexed": false,
+												"mutability": "mutable",
+												"name": "rewardAmount",
+												"nameLocation": "7046:12:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 161,
+												"src": "7038:20:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 156,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "7038:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 159,
+												"indexed": false,
+												"mutability": "mutable",
+												"name": "caseId",
+												"nameLocation": "7076:6:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 161,
+												"src": "7068:14:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 158,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "7068:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "6989:99:0"
+									},
+									"src": "6969:120:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 162,
+										"nodeType": "StructuredDocumentation",
+										"src": "7095:156:0",
+										"text": " @notice Event emitted when a lawyer signs up as a legal representative.\n @param lawyerAddress The address of the lawyer signing up."
+									},
+									"eventSelector": "477258c324e1dc966c3e151d300b92686593e768b5c01e809c2c820eee02cffc",
+									"id": 166,
+									"name": "LawyerSignedUp",
+									"nameLocation": "7262:14:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 165,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 164,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "lawyerAddress",
+												"nameLocation": "7293:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 166,
+												"src": "7277:29:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 163,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "7277:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "7276:31:0"
+									},
+									"src": "7256:52:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 167,
+										"nodeType": "StructuredDocumentation",
+										"src": "7314:285:0",
+										"text": " @notice Event emitted when a new case is added for a lawyer.\n @param lawyerAddress The address of the lawyer handling the case.\n @param caseId The unique identifier for the case.\n @param memberAddress The address of the member involved in the case."
+									},
+									"eventSelector": "c18563ff27245b6f08b02acadbabd8d64917c95f956596f4a216768f8a91baa1",
+									"id": 177,
+									"name": "CaseAdded",
+									"nameLocation": "7610:9:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 176,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 169,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "lawyerAddress",
+												"nameLocation": "7645:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 177,
+												"src": "7629:29:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 168,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "7629:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 171,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "caseId",
+												"nameLocation": "7684:6:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 177,
+												"src": "7668:22:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 170,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "7668:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 173,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "memberAddress",
+												"nameLocation": "7716:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 177,
+												"src": "7700:29:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 172,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "7700:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 175,
+												"indexed": false,
+												"mutability": "mutable",
+												"name": "isEmergency",
+												"nameLocation": "7744:11:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 177,
+												"src": "7739:16:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bool",
+													"typeString": "bool"
+												},
+												"typeName": {
+													"id": 174,
+													"name": "bool",
+													"nodeType": "ElementaryTypeName",
+													"src": "7739:4:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bool",
+														"typeString": "bool"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "7619:142:0"
+									},
+									"src": "7604:158:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 178,
+										"nodeType": "StructuredDocumentation",
+										"src": "7768:208:0",
+										"text": " @notice Event emitted when a case is resolved for a lawyer.\n @param lawyerAddress The address of the lawyer handling the case.\n @param caseId The unique identifier for the case."
+									},
+									"eventSelector": "8c367c1c13bf9b767a56a0b09a4a9372dd331ad43693c05b58e5f25f123340df",
+									"id": 184,
+									"name": "CaseResolved",
+									"nameLocation": "7987:12:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 183,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 180,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "lawyerAddress",
+												"nameLocation": "8016:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 184,
+												"src": "8000:29:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 179,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "8000:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 182,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "caseId",
+												"nameLocation": "8047:6:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 184,
+												"src": "8031:22:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 181,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "8031:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "7999:55:0"
+									},
+									"src": "7981:74:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 185,
+										"nodeType": "StructuredDocumentation",
+										"src": "8061:134:0",
+										"text": " @notice Event emitted when the payment token is updated.\n @param tokenAddress The new token contract address."
+									},
+									"eventSelector": "bd4032c1c91da2791730ea1bbc82c6b6f857da7c0a8318143d19ef74e62cd913",
+									"id": 189,
+									"name": "PaymentTokenUpdated",
+									"nameLocation": "8206:19:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 188,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 187,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "tokenAddress",
+												"nameLocation": "8242:12:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 189,
+												"src": "8226:28:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 186,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "8226:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "8225:30:0"
+									},
+									"src": "8200:56:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 190,
+										"nodeType": "StructuredDocumentation",
+										"src": "8262:363:0",
+										"text": " @notice Event emitted when an emergency response is confirmed by a lawyer.\n @param lawyerAddress The address of the lawyer responding to the emergency.\n @param caseId The unique identifier for the case.\n @param memberAddress The address of the member involved.\n @param timestamp The time when the response was confirmed."
+									},
+									"eventSelector": "41195084f354bc7da593812f4b0e44aec4e701ef0e7f6e15a5a574c33503437d",
+									"id": 200,
+									"name": "EmergencyResponseConfirmed",
+									"nameLocation": "8636:26:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 199,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 192,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "lawyerAddress",
+												"nameLocation": "8688:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 200,
+												"src": "8672:29:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 191,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "8672:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 194,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "caseId",
+												"nameLocation": "8727:6:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 200,
+												"src": "8711:22:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 193,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "8711:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 196,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "memberAddress",
+												"nameLocation": "8759:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 200,
+												"src": "8743:29:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 195,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "8743:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 198,
+												"indexed": false,
+												"mutability": "mutable",
+												"name": "timestamp",
+												"nameLocation": "8790:9:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 200,
+												"src": "8782:17:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 197,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "8782:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "8662:143:0"
+									},
+									"src": "8630:176:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 201,
+										"nodeType": "StructuredDocumentation",
+										"src": "8812:276:0",
+										"text": " @notice Event emitted when a new incident is reported.\n @param incidentId The unique identifier for the incident.\n @param reporter The address of the member reporting the incident.\n @param timestamp The time when the incident was reported."
+									},
+									"eventSelector": "159eae2587974b857c8b28d8d49d8cca50cc87fc9b0bd9bd76467f77aaf5c8b6",
+									"id": 209,
+									"name": "IncidentReported",
+									"nameLocation": "9099:16:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 208,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 203,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "incidentId",
+												"nameLocation": "9141:10:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 209,
+												"src": "9125:26:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 202,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "9125:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 205,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "reporter",
+												"nameLocation": "9177:8:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 209,
+												"src": "9161:24:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 204,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "9161:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 207,
+												"indexed": false,
+												"mutability": "mutable",
+												"name": "timestamp",
+												"nameLocation": "9203:9:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 209,
+												"src": "9195:17:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 206,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "9195:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "9115:103:0"
+									},
+									"src": "9093:126:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 210,
+										"nodeType": "StructuredDocumentation",
+										"src": "9225:297:0",
+										"text": " @notice Event emitted when a corroboration is added to an incident.\n @param incidentId The unique identifier for the incident.\n @param corroborator The address of the member adding the corroboration.\n @param timestamp The time when the corroboration was added."
+									},
+									"eventSelector": "37b3e104208f85d1df430bbefbe3fee48f2b666f587576036f4d60ef673af50c",
+									"id": 218,
+									"name": "CorroborationAdded",
+									"nameLocation": "9533:18:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 217,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 212,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "incidentId",
+												"nameLocation": "9577:10:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 218,
+												"src": "9561:26:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 211,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "9561:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 214,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "corroborator",
+												"nameLocation": "9613:12:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 218,
+												"src": "9597:28:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 213,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "9597:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 216,
+												"indexed": false,
+												"mutability": "mutable",
+												"name": "timestamp",
+												"nameLocation": "9643:9:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 218,
+												"src": "9635:17:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 215,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "9635:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "9551:107:0"
+									},
+									"src": "9527:132:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 219,
+										"nodeType": "StructuredDocumentation",
+										"src": "9665:322:0",
+										"text": " @notice Event emitted when an incident's verification status is updated.\n @param incidentId The unique identifier for the incident.\n @param status The new verification status (0: Unverified, 1: Verified, 2: Rejected).\n @param verifier The address of the entity that updated the status."
+									},
+									"eventSelector": "1203445afe71a7457fedfe3ed5f7dfbcefac21aeacee1baf8af2b4639fbfdbeb",
+									"id": 227,
+									"name": "IncidentStatusUpdated",
+									"nameLocation": "9998:21:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 226,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 221,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "incidentId",
+												"nameLocation": "10045:10:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 227,
+												"src": "10029:26:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 220,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "10029:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 223,
+												"indexed": false,
+												"mutability": "mutable",
+												"name": "status",
+												"nameLocation": "10071:6:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 227,
+												"src": "10065:12:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint8",
+													"typeString": "uint8"
+												},
+												"typeName": {
+													"id": 222,
+													"name": "uint8",
+													"nodeType": "ElementaryTypeName",
+													"src": "10065:5:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint8",
+														"typeString": "uint8"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 225,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "verifier",
+												"nameLocation": "10103:8:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 227,
+												"src": "10087:24:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 224,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "10087:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "10019:98:0"
+									},
+									"src": "9992:126:0"
+								}
+							],
+							"scope": 229,
+							"src": "57:10063:0",
+							"usedErrors": [],
+							"usedEvents": [
+								145,
+								152,
+								161,
+								166,
+								177,
+								184,
+								189,
+								200,
+								209,
+								218,
+								227
+							]
+						}
+					],
+					"src": "32:10089:0"
+				},
+				"id": 0
+			}
+		}
+	}
+}
