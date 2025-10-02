@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.26+commit.8a97fa7a"
+		"version": "0.8.24+commit.e11b9ed9"
 	},
 	"language": "Solidity",
 	"output": {
@@ -19,7 +19,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/PadiProtocol_flattened.sol": "Math"
+			"contracts/PadiTokenStable_flattened.sol": "Math"
 		},
 		"evmVersion": "cancun",
 		"libraries": {},
@@ -27,17 +27,17 @@
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": true,
+			"enabled": false,
 			"runs": 200
 		},
 		"remappings": []
 	},
 	"sources": {
-		"contracts/PadiProtocol_flattened.sol": {
-			"keccak256": "0x754c46fa29b3df1777f64f7af6ee4be0dbb01615aaed5e390f39722e92f8edfa",
+		"contracts/PadiTokenStable_flattened.sol": {
+			"keccak256": "0xc37de53c5f86ffa932fbd877b5f99e5626ff8dd1c8aaa37a73603ee57e3e84f6",
 			"urls": [
-				"bzz-raw://7abc5ef61655f475d9f00f0660b990e9a95567b443f87267c68dd69116591ab4",
-				"dweb:/ipfs/QmUaQr4n6jbVAD89N89bqXPRgUR5WoLojQuhzGCYqUTWiF"
+				"bzz-raw://3363f65742789d62965f2f9a45d7cd8227689c043f5c911e8ad8d66396a7f026",
+				"dweb:/ipfs/QmTCba5ymgzwsYp1Lf5A9GtYscv3jQrAv4EZa8QdkV3HJ6"
 			]
 		}
 	},

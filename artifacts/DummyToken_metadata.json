@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.24+commit.e11b9ed9"
+		"version": "0.8.30+commit.73712a01"
 	},
 	"language": "Solidity",
 	"output": {
@@ -254,7 +254,7 @@
 		"compilationTarget": {
 			"contracts/dummy_token.sol": "DummyToken"
 		},
-		"evmVersion": "shanghai",
+		"evmVersion": "cancun",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"

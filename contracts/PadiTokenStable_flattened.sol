@@ -2,9 +2,9 @@
 // File: @openzeppelin/contracts/token/ERC20/IERC20.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC20/IERC20.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/IERC20.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.4.16;
 
 /**
  * @dev Interface of the ERC-20 standard as defined in the ERC.
@@ -84,9 +84,9 @@ interface IERC20 {
 // File: @openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC20/extensions/IERC20Metadata.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/IERC20Metadata.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.6.2;
 
 
 /**
@@ -143,8 +143,8 @@ abstract contract Context {
 // File: @openzeppelin/contracts/interfaces/draft-IERC6093.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (interfaces/draft-IERC6093.sol)
-pragma solidity ^0.8.20;
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/draft-IERC6093.sol)
+pragma solidity >=0.8.4;
 
 /**
  * @dev Standard ERC-20 Errors
@@ -307,7 +307,7 @@ interface IERC1155Errors {
 // File: @openzeppelin/contracts/token/ERC20/ERC20.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC20/ERC20.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/ERC20.sol)
 
 pragma solidity ^0.8.20;
 
@@ -346,8 +346,7 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     /**
      * @dev Sets the values for {name} and {symbol}.
      *
-     * All two of these values are immutable: they can only be set once during
-     * construction.
+     * Both values are immutable: they can only be set once during construction.
      */
     constructor(string memory name_, string memory symbol_) {
         _name = name_;
@@ -386,16 +385,12 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
         return 18;
     }
 
-    /**
-     * @dev See {IERC20-totalSupply}.
-     */
+    /// @inheritdoc IERC20
     function totalSupply() public view virtual returns (uint256) {
         return _totalSupply;
     }
 
-    /**
-     * @dev See {IERC20-balanceOf}.
-     */
+    /// @inheritdoc IERC20
     function balanceOf(address account) public view virtual returns (uint256) {
         return _balances[account];
     }
@@ -414,9 +409,7 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
         return true;
     }
 
-    /**
-     * @dev See {IERC20-allowance}.
-     */
+    /// @inheritdoc IERC20
     function allowance(address owner, address spender) public view virtual returns (uint256) {
         return _allowances[owner][spender];
     }
@@ -548,7 +541,7 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     }
 
     /**
-     * @dev Sets `value` as the allowance of `spender` over the `owner` s tokens.
+     * @dev Sets `value` as the allowance of `spender` over the `owner`'s tokens.
      *
      * This internal function is equivalent to `approve`, and can be used to
      * e.g. set automatic allowances for certain subsystems, etc.
@@ -598,7 +591,7 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     }
 
     /**
-     * @dev Updates `owner` s allowance for `spender` based on spent `value`.
+     * @dev Updates `owner`'s allowance for `spender` based on spent `value`.
      *
      * Does not update the allowance value in case of infinite allowance.
      * Revert if not enough allowance is available.
@@ -607,7 +600,7 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
      */
     function _spendAllowance(address owner, address spender, uint256 value) internal virtual {
         uint256 currentAllowance = allowance(owner, spender);
-        if (currentAllowance != type(uint256).max) {
+        if (currentAllowance < type(uint256).max) {
             if (currentAllowance < value) {
                 revert ERC20InsufficientAllowance(spender, currentAllowance, value);
             }
@@ -621,9 +614,9 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
 // File: @openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC20/extensions/IERC20Permit.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/IERC20Permit.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.4.16;
 
 /**
  * @dev Interface of the ERC-20 Permit extension allowing approvals to be made via signatures, as defined in
@@ -2122,7 +2115,7 @@ library SafeCast {
 // File: @openzeppelin/contracts/utils/math/Math.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (utils/math/Math.sol)
+// OpenZeppelin Contracts (last updated v5.3.0) (utils/math/Math.sol)
 
 pragma solidity ^0.8.20;
 
@@ -2140,38 +2133,68 @@ library Math {
     }
 
     /**
-     * @dev Returns the addition of two unsigned integers, with an success flag (no overflow).
+     * @dev Return the 512-bit addition of two uint256.
+     *
+     * The result is stored in two 256 variables such that sum = high * 2²⁵⁶ + low.
+     */
+    function add512(uint256 a, uint256 b) internal pure returns (uint256 high, uint256 low) {
+        assembly ("memory-safe") {
+            low := add(a, b)
+            high := lt(low, a)
+        }
+    }
+
+    /**
+     * @dev Return the 512-bit multiplication of two uint256.
+     *
+     * The result is stored in two 256 variables such that product = high * 2²⁵⁶ + low.
+     */
+    function mul512(uint256 a, uint256 b) internal pure returns (uint256 high, uint256 low) {
+        // 512-bit multiply [high low] = x * y. Compute the product mod 2²⁵⁶ and mod 2²⁵⁶ - 1, then use
+        // the Chinese Remainder Theorem to reconstruct the 512 bit result. The result is stored in two 256
+        // variables such that product = high * 2²⁵⁶ + low.
+        assembly ("memory-safe") {
+            let mm := mulmod(a, b, not(0))
+            low := mul(a, b)
+            high := sub(sub(mm, low), lt(mm, low))
+        }
+    }
+
+    /**
+     * @dev Returns the addition of two unsigned integers, with a success flag (no overflow).
      */
     function tryAdd(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
         unchecked {
             uint256 c = a + b;
-            if (c < a) return (false, 0);
-            return (true, c);
+            success = c >= a;
+            result = c * SafeCast.toUint(success);
         }
     }
 
     /**
-     * @dev Returns the subtraction of two unsigned integers, with an success flag (no overflow).
+     * @dev Returns the subtraction of two unsigned integers, with a success flag (no overflow).
      */
     function trySub(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
         unchecked {
-            if (b > a) return (false, 0);
-            return (true, a - b);
+            uint256 c = a - b;
+            success = c <= a;
+            result = c * SafeCast.toUint(success);
         }
     }
 
     /**
-     * @dev Returns the multiplication of two unsigned integers, with an success flag (no overflow).
+     * @dev Returns the multiplication of two unsigned integers, with a success flag (no overflow).
      */
     function tryMul(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
         unchecked {
-            // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-            // benefit is lost if 'b' is also tested.
-            // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
-            if (a == 0) return (true, 0);
             uint256 c = a * b;
-            if (c / a != b) return (false, 0);
-            return (true, c);
+            assembly ("memory-safe") {
+                // Only true when the multiplication doesn't overflow
+                // (c / a == b) || (a == 0)
+                success := or(eq(div(c, a), b), iszero(a))
+            }
+            // equivalent to: success ? c : 0
+            result = c * SafeCast.toUint(success);
         }
     }
 
@@ -2180,8 +2203,11 @@ library Math {
      */
     function tryDiv(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
         unchecked {
-            if (b == 0) return (false, 0);
-            return (true, a / b);
+            success = b > 0;
+            assembly ("memory-safe") {
+                // The `DIV` opcode returns zero when the denominator is 0.
+                result := div(a, b)
+            }
         }
     }
 
@@ -2190,9 +2216,36 @@ library Math {
      */
     function tryMod(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
         unchecked {
-            if (b == 0) return (false, 0);
-            return (true, a % b);
+            success = b > 0;
+            assembly ("memory-safe") {
+                // The `MOD` opcode returns zero when the denominator is 0.
+                result := mod(a, b)
+            }
         }
+    }
+
+    /**
+     * @dev Unsigned saturating addition, bounds to `2²⁵⁶ - 1` instead of overflowing.
+     */
+    function saturatingAdd(uint256 a, uint256 b) internal pure returns (uint256) {
+        (bool success, uint256 result) = tryAdd(a, b);
+        return ternary(success, result, type(uint256).max);
+    }
+
+    /**
+     * @dev Unsigned saturating subtraction, bounds to zero instead of overflowing.
+     */
+    function saturatingSub(uint256 a, uint256 b) internal pure returns (uint256) {
+        (, uint256 result) = trySub(a, b);
+        return result;
+    }
+
+    /**
+     * @dev Unsigned saturating multiplication, bounds to `2²⁵⁶ - 1` instead of overflowing.
+     */
+    function saturatingMul(uint256 a, uint256 b) internal pure returns (uint256) {
+        (bool success, uint256 result) = tryMul(a, b);
+        return ternary(success, result, type(uint256).max);
     }
 
     /**
@@ -2265,26 +2318,18 @@ library Math {
      */
     function mulDiv(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 result) {
         unchecked {
-            // 512-bit multiply [prod1 prod0] = x * y. Compute the product mod 2²⁵⁶ and mod 2²⁵⁶ - 1, then use
-            // the Chinese Remainder Theorem to reconstruct the 512 bit result. The result is stored in two 256
-            // variables such that product = prod1 * 2²⁵⁶ + prod0.
-            uint256 prod0 = x * y; // Least significant 256 bits of the product
-            uint256 prod1; // Most significant 256 bits of the product
-            assembly {
-                let mm := mulmod(x, y, not(0))
-                prod1 := sub(sub(mm, prod0), lt(mm, prod0))
-            }
+            (uint256 high, uint256 low) = mul512(x, y);
 
             // Handle non-overflow cases, 256 by 256 division.
-            if (prod1 == 0) {
+            if (high == 0) {
                 // Solidity will revert if denominator == 0, unlike the div opcode on its own.
                 // The surrounding unchecked block does not change this fact.
                 // See https://docs.soliditylang.org/en/latest/control-structures.html#checked-or-unchecked-arithmetic.
-                return prod0 / denominator;
+                return low / denominator;
             }
 
             // Make sure the result is less than 2²⁵⁶. Also prevents denominator == 0.
-            if (denominator <= prod1) {
+            if (denominator <= high) {
                 Panic.panic(ternary(denominator == 0, Panic.DIVISION_BY_ZERO, Panic.UNDER_OVERFLOW));
             }
 
@@ -2292,34 +2337,34 @@ library Math {
             // 512 by 256 division.
             ///////////////////////////////////////////////
 
-            // Make division exact by subtracting the remainder from [prod1 prod0].
+            // Make division exact by subtracting the remainder from [high low].
             uint256 remainder;
-            assembly {
+            assembly ("memory-safe") {
                 // Compute remainder using mulmod.
                 remainder := mulmod(x, y, denominator)
 
                 // Subtract 256 bit number from 512 bit number.
-                prod1 := sub(prod1, gt(remainder, prod0))
-                prod0 := sub(prod0, remainder)
+                high := sub(high, gt(remainder, low))
+                low := sub(low, remainder)
             }
 
             // Factor powers of two out of denominator and compute largest power of two divisor of denominator.
             // Always >= 1. See https://cs.stackexchange.com/q/138556/92363.
 
             uint256 twos = denominator & (0 - denominator);
-            assembly {
+            assembly ("memory-safe") {
                 // Divide denominator by twos.
                 denominator := div(denominator, twos)
 
-                // Divide [prod1 prod0] by twos.
-                prod0 := div(prod0, twos)
+                // Divide [high low] by twos.
+                low := div(low, twos)
 
                 // Flip twos such that it is 2²⁵⁶ / twos. If twos is zero, then it becomes one.
                 twos := add(div(sub(0, twos), twos), 1)
             }
 
-            // Shift in bits from prod1 into prod0.
-            prod0 |= prod1 * twos;
+            // Shift in bits from high into low.
+            low |= high * twos;
 
             // Invert denominator mod 2²⁵⁶. Now that denominator is an odd number, it has an inverse modulo 2²⁵⁶ such
             // that denominator * inv ≡ 1 mod 2²⁵⁶. Compute the inverse by starting with a seed that is correct for
@@ -2337,9 +2382,9 @@ library Math {
 
             // Because the division is now exact we can divide by multiplying with the modular inverse of denominator.
             // This will give us the correct result modulo 2²⁵⁶. Since the preconditions guarantee that the outcome is
-            // less than 2²⁵⁶, this is the final result. We don't need to compute the high bits of the result and prod1
+            // less than 2²⁵⁶, this is the final result. We don't need to compute the high bits of the result and high
             // is no longer required.
-            result = prod0 * inverse;
+            result = low * inverse;
             return result;
         }
     }
@@ -2349,6 +2394,26 @@ library Math {
      */
     function mulDiv(uint256 x, uint256 y, uint256 denominator, Rounding rounding) internal pure returns (uint256) {
         return mulDiv(x, y, denominator) + SafeCast.toUint(unsignedRoundsUp(rounding) && mulmod(x, y, denominator) > 0);
+    }
+
+    /**
+     * @dev Calculates floor(x * y >> n) with full precision. Throws if result overflows a uint256.
+     */
+    function mulShr(uint256 x, uint256 y, uint8 n) internal pure returns (uint256 result) {
+        unchecked {
+            (uint256 high, uint256 low) = mul512(x, y);
+            if (high >= 1 << n) {
+                Panic.panic(Panic.UNDER_OVERFLOW);
+            }
+            return (high << (256 - n)) | (low >> n);
+        }
+    }
+
+    /**
+     * @dev Calculates x * y >> n with full precision, following the selected rounding direction.
+     */
+    function mulShr(uint256 x, uint256 y, uint8 n, Rounding rounding) internal pure returns (uint256) {
+        return mulShr(x, y, n) + SafeCast.toUint(unsignedRoundsUp(rounding) && mulmod(x, y, 1 << n) > 0);
     }
 
     /**
@@ -2659,41 +2724,45 @@ library Math {
      * @dev Return the log in base 2 of a positive value rounded towards zero.
      * Returns 0 if given 0.
      */
-    function log2(uint256 value) internal pure returns (uint256) {
-        uint256 result = 0;
-        uint256 exp;
-        unchecked {
-            exp = 128 * SafeCast.toUint(value > (1 << 128) - 1);
-            value >>= exp;
-            result += exp;
+    function log2(uint256 x) internal pure returns (uint256 r) {
+        // If value has upper 128 bits set, log2 result is at least 128
+        r = SafeCast.toUint(x > 0xffffffffffffffffffffffffffffffff) << 7;
+        // If upper 64 bits of 128-bit half set, add 64 to result
+        r |= SafeCast.toUint((x >> r) > 0xffffffffffffffff) << 6;
+        // If upper 32 bits of 64-bit half set, add 32 to result
+        r |= SafeCast.toUint((x >> r) > 0xffffffff) << 5;
+        // If upper 16 bits of 32-bit half set, add 16 to result
+        r |= SafeCast.toUint((x >> r) > 0xffff) << 4;
+        // If upper 8 bits of 16-bit half set, add 8 to result
+        r |= SafeCast.toUint((x >> r) > 0xff) << 3;
+        // If upper 4 bits of 8-bit half set, add 4 to result
+        r |= SafeCast.toUint((x >> r) > 0xf) << 2;
 
-            exp = 64 * SafeCast.toUint(value > (1 << 64) - 1);
-            value >>= exp;
-            result += exp;
-
-            exp = 32 * SafeCast.toUint(value > (1 << 32) - 1);
-            value >>= exp;
-            result += exp;
-
-            exp = 16 * SafeCast.toUint(value > (1 << 16) - 1);
-            value >>= exp;
-            result += exp;
-
-            exp = 8 * SafeCast.toUint(value > (1 << 8) - 1);
-            value >>= exp;
-            result += exp;
-
-            exp = 4 * SafeCast.toUint(value > (1 << 4) - 1);
-            value >>= exp;
-            result += exp;
-
-            exp = 2 * SafeCast.toUint(value > (1 << 2) - 1);
-            value >>= exp;
-            result += exp;
-
-            result += SafeCast.toUint(value > 1);
+        // Shifts value right by the current result and use it as an index into this lookup table:
+        //
+        // | x (4 bits) |  index  | table[index] = MSB position |
+        // |------------|---------|-----------------------------|
+        // |    0000    |    0    |        table[0] = 0         |
+        // |    0001    |    1    |        table[1] = 0         |
+        // |    0010    |    2    |        table[2] = 1         |
+        // |    0011    |    3    |        table[3] = 1         |
+        // |    0100    |    4    |        table[4] = 2         |
+        // |    0101    |    5    |        table[5] = 2         |
+        // |    0110    |    6    |        table[6] = 2         |
+        // |    0111    |    7    |        table[7] = 2         |
+        // |    1000    |    8    |        table[8] = 3         |
+        // |    1001    |    9    |        table[9] = 3         |
+        // |    1010    |   10    |        table[10] = 3        |
+        // |    1011    |   11    |        table[11] = 3        |
+        // |    1100    |   12    |        table[12] = 3        |
+        // |    1101    |   13    |        table[13] = 3        |
+        // |    1110    |   14    |        table[14] = 3        |
+        // |    1111    |   15    |        table[15] = 3        |
+        //
+        // The lookup table is represented as a 32-byte value with the MSB positions for 0-15 in the last 16 bytes.
+        assembly ("memory-safe") {
+            r := or(r, byte(shr(r, x), 0x0000010102020202030303030303030300000000000000000000000000000000))
         }
-        return result;
     }
 
     /**
@@ -2762,29 +2831,17 @@ library Math {
      *
      * Adding one to the result gives the number of pairs of hex symbols needed to represent `value` as a hex string.
      */
-    function log256(uint256 value) internal pure returns (uint256) {
-        uint256 result = 0;
-        uint256 isGt;
-        unchecked {
-            isGt = SafeCast.toUint(value > (1 << 128) - 1);
-            value >>= isGt * 128;
-            result += isGt * 16;
-
-            isGt = SafeCast.toUint(value > (1 << 64) - 1);
-            value >>= isGt * 64;
-            result += isGt * 8;
-
-            isGt = SafeCast.toUint(value > (1 << 32) - 1);
-            value >>= isGt * 32;
-            result += isGt * 4;
-
-            isGt = SafeCast.toUint(value > (1 << 16) - 1);
-            value >>= isGt * 16;
-            result += isGt * 2;
-
-            result += SafeCast.toUint(value > (1 << 8) - 1);
-        }
-        return result;
+    function log256(uint256 x) internal pure returns (uint256 r) {
+        // If value has upper 128 bits set, log2 result is at least 128
+        r = SafeCast.toUint(x > 0xffffffffffffffffffffffffffffffff) << 7;
+        // If upper 64 bits of 128-bit half set, add 64 to result
+        r |= SafeCast.toUint((x >> r) > 0xffffffffffffffff) << 6;
+        // If upper 32 bits of 64-bit half set, add 32 to result
+        r |= SafeCast.toUint((x >> r) > 0xffffffff) << 5;
+        // If upper 16 bits of 32-bit half set, add 16 to result
+        r |= SafeCast.toUint((x >> r) > 0xffff) << 4;
+        // Add 1 if upper 8 bits of 16-bit half set, and divide accumulated result by 8
+        return (r >> 3) | SafeCast.toUint((x >> r) > 0xff);
     }
 
     /**
@@ -2879,9 +2936,10 @@ library SignedMath {
 // File: @openzeppelin/contracts/utils/Strings.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (utils/Strings.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (utils/Strings.sol)
 
 pragma solidity ^0.8.20;
+
 
 
 
@@ -2889,13 +2947,33 @@ pragma solidity ^0.8.20;
  * @dev String operations.
  */
 library Strings {
+    using SafeCast for *;
+
     bytes16 private constant HEX_DIGITS = "0123456789abcdef";
     uint8 private constant ADDRESS_LENGTH = 20;
+    uint256 private constant SPECIAL_CHARS_LOOKUP =
+        (1 << 0x08) | // backspace
+            (1 << 0x09) | // tab
+            (1 << 0x0a) | // newline
+            (1 << 0x0c) | // form feed
+            (1 << 0x0d) | // carriage return
+            (1 << 0x22) | // double quote
+            (1 << 0x5c); // backslash
 
     /**
      * @dev The `value` string doesn't fit in the specified `length`.
      */
     error StringsInsufficientHexLength(uint256 value, uint256 length);
+
+    /**
+     * @dev The string being parsed contains characters that are not in scope of the given base.
+     */
+    error StringsInvalidChar();
+
+    /**
+     * @dev The string being parsed is not a properly formatted address.
+     */
+    error StringsInvalidAddressFormat();
 
     /**
      * @dev Converts a `uint256` to its ASCII `string` decimal representation.
@@ -2906,7 +2984,7 @@ library Strings {
             string memory buffer = new string(length);
             uint256 ptr;
             assembly ("memory-safe") {
-                ptr := add(buffer, add(32, length))
+                ptr := add(add(buffer, 0x20), length)
             }
             while (true) {
                 ptr--;
@@ -2991,6 +3069,359 @@ library Strings {
      */
     function equal(string memory a, string memory b) internal pure returns (bool) {
         return bytes(a).length == bytes(b).length && keccak256(bytes(a)) == keccak256(bytes(b));
+    }
+
+    /**
+     * @dev Parse a decimal string and returns the value as a `uint256`.
+     *
+     * Requirements:
+     * - The string must be formatted as `[0-9]*`
+     * - The result must fit into an `uint256` type
+     */
+    function parseUint(string memory input) internal pure returns (uint256) {
+        return parseUint(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseUint-string} that parses a substring of `input` located between position `begin` (included) and
+     * `end` (excluded).
+     *
+     * Requirements:
+     * - The substring must be formatted as `[0-9]*`
+     * - The result must fit into an `uint256` type
+     */
+    function parseUint(string memory input, uint256 begin, uint256 end) internal pure returns (uint256) {
+        (bool success, uint256 value) = tryParseUint(input, begin, end);
+        if (!success) revert StringsInvalidChar();
+        return value;
+    }
+
+    /**
+     * @dev Variant of {parseUint-string} that returns false if the parsing fails because of an invalid character.
+     *
+     * NOTE: This function will revert if the result does not fit in a `uint256`.
+     */
+    function tryParseUint(string memory input) internal pure returns (bool success, uint256 value) {
+        return _tryParseUintUncheckedBounds(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseUint-string-uint256-uint256} that returns false if the parsing fails because of an invalid
+     * character.
+     *
+     * NOTE: This function will revert if the result does not fit in a `uint256`.
+     */
+    function tryParseUint(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) internal pure returns (bool success, uint256 value) {
+        if (end > bytes(input).length || begin > end) return (false, 0);
+        return _tryParseUintUncheckedBounds(input, begin, end);
+    }
+
+    /**
+     * @dev Implementation of {tryParseUint-string-uint256-uint256} that does not check bounds. Caller should make sure that
+     * `begin <= end <= input.length`. Other inputs would result in undefined behavior.
+     */
+    function _tryParseUintUncheckedBounds(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) private pure returns (bool success, uint256 value) {
+        bytes memory buffer = bytes(input);
+
+        uint256 result = 0;
+        for (uint256 i = begin; i < end; ++i) {
+            uint8 chr = _tryParseChr(bytes1(_unsafeReadBytesOffset(buffer, i)));
+            if (chr > 9) return (false, 0);
+            result *= 10;
+            result += chr;
+        }
+        return (true, result);
+    }
+
+    /**
+     * @dev Parse a decimal string and returns the value as a `int256`.
+     *
+     * Requirements:
+     * - The string must be formatted as `[-+]?[0-9]*`
+     * - The result must fit in an `int256` type.
+     */
+    function parseInt(string memory input) internal pure returns (int256) {
+        return parseInt(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseInt-string} that parses a substring of `input` located between position `begin` (included) and
+     * `end` (excluded).
+     *
+     * Requirements:
+     * - The substring must be formatted as `[-+]?[0-9]*`
+     * - The result must fit in an `int256` type.
+     */
+    function parseInt(string memory input, uint256 begin, uint256 end) internal pure returns (int256) {
+        (bool success, int256 value) = tryParseInt(input, begin, end);
+        if (!success) revert StringsInvalidChar();
+        return value;
+    }
+
+    /**
+     * @dev Variant of {parseInt-string} that returns false if the parsing fails because of an invalid character or if
+     * the result does not fit in a `int256`.
+     *
+     * NOTE: This function will revert if the absolute value of the result does not fit in a `uint256`.
+     */
+    function tryParseInt(string memory input) internal pure returns (bool success, int256 value) {
+        return _tryParseIntUncheckedBounds(input, 0, bytes(input).length);
+    }
+
+    uint256 private constant ABS_MIN_INT256 = 2 ** 255;
+
+    /**
+     * @dev Variant of {parseInt-string-uint256-uint256} that returns false if the parsing fails because of an invalid
+     * character or if the result does not fit in a `int256`.
+     *
+     * NOTE: This function will revert if the absolute value of the result does not fit in a `uint256`.
+     */
+    function tryParseInt(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) internal pure returns (bool success, int256 value) {
+        if (end > bytes(input).length || begin > end) return (false, 0);
+        return _tryParseIntUncheckedBounds(input, begin, end);
+    }
+
+    /**
+     * @dev Implementation of {tryParseInt-string-uint256-uint256} that does not check bounds. Caller should make sure that
+     * `begin <= end <= input.length`. Other inputs would result in undefined behavior.
+     */
+    function _tryParseIntUncheckedBounds(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) private pure returns (bool success, int256 value) {
+        bytes memory buffer = bytes(input);
+
+        // Check presence of a negative sign.
+        bytes1 sign = begin == end ? bytes1(0) : bytes1(_unsafeReadBytesOffset(buffer, begin)); // don't do out-of-bound (possibly unsafe) read if sub-string is empty
+        bool positiveSign = sign == bytes1("+");
+        bool negativeSign = sign == bytes1("-");
+        uint256 offset = (positiveSign || negativeSign).toUint();
+
+        (bool absSuccess, uint256 absValue) = tryParseUint(input, begin + offset, end);
+
+        if (absSuccess && absValue < ABS_MIN_INT256) {
+            return (true, negativeSign ? -int256(absValue) : int256(absValue));
+        } else if (absSuccess && negativeSign && absValue == ABS_MIN_INT256) {
+            return (true, type(int256).min);
+        } else return (false, 0);
+    }
+
+    /**
+     * @dev Parse a hexadecimal string (with or without "0x" prefix), and returns the value as a `uint256`.
+     *
+     * Requirements:
+     * - The string must be formatted as `(0x)?[0-9a-fA-F]*`
+     * - The result must fit in an `uint256` type.
+     */
+    function parseHexUint(string memory input) internal pure returns (uint256) {
+        return parseHexUint(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseHexUint-string} that parses a substring of `input` located between position `begin` (included) and
+     * `end` (excluded).
+     *
+     * Requirements:
+     * - The substring must be formatted as `(0x)?[0-9a-fA-F]*`
+     * - The result must fit in an `uint256` type.
+     */
+    function parseHexUint(string memory input, uint256 begin, uint256 end) internal pure returns (uint256) {
+        (bool success, uint256 value) = tryParseHexUint(input, begin, end);
+        if (!success) revert StringsInvalidChar();
+        return value;
+    }
+
+    /**
+     * @dev Variant of {parseHexUint-string} that returns false if the parsing fails because of an invalid character.
+     *
+     * NOTE: This function will revert if the result does not fit in a `uint256`.
+     */
+    function tryParseHexUint(string memory input) internal pure returns (bool success, uint256 value) {
+        return _tryParseHexUintUncheckedBounds(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseHexUint-string-uint256-uint256} that returns false if the parsing fails because of an
+     * invalid character.
+     *
+     * NOTE: This function will revert if the result does not fit in a `uint256`.
+     */
+    function tryParseHexUint(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) internal pure returns (bool success, uint256 value) {
+        if (end > bytes(input).length || begin > end) return (false, 0);
+        return _tryParseHexUintUncheckedBounds(input, begin, end);
+    }
+
+    /**
+     * @dev Implementation of {tryParseHexUint-string-uint256-uint256} that does not check bounds. Caller should make sure that
+     * `begin <= end <= input.length`. Other inputs would result in undefined behavior.
+     */
+    function _tryParseHexUintUncheckedBounds(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) private pure returns (bool success, uint256 value) {
+        bytes memory buffer = bytes(input);
+
+        // skip 0x prefix if present
+        bool hasPrefix = (end > begin + 1) && bytes2(_unsafeReadBytesOffset(buffer, begin)) == bytes2("0x"); // don't do out-of-bound (possibly unsafe) read if sub-string is empty
+        uint256 offset = hasPrefix.toUint() * 2;
+
+        uint256 result = 0;
+        for (uint256 i = begin + offset; i < end; ++i) {
+            uint8 chr = _tryParseChr(bytes1(_unsafeReadBytesOffset(buffer, i)));
+            if (chr > 15) return (false, 0);
+            result *= 16;
+            unchecked {
+                // Multiplying by 16 is equivalent to a shift of 4 bits (with additional overflow check).
+                // This guarantees that adding a value < 16 will not cause an overflow, hence the unchecked.
+                result += chr;
+            }
+        }
+        return (true, result);
+    }
+
+    /**
+     * @dev Parse a hexadecimal string (with or without "0x" prefix), and returns the value as an `address`.
+     *
+     * Requirements:
+     * - The string must be formatted as `(0x)?[0-9a-fA-F]{40}`
+     */
+    function parseAddress(string memory input) internal pure returns (address) {
+        return parseAddress(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseAddress-string} that parses a substring of `input` located between position `begin` (included) and
+     * `end` (excluded).
+     *
+     * Requirements:
+     * - The substring must be formatted as `(0x)?[0-9a-fA-F]{40}`
+     */
+    function parseAddress(string memory input, uint256 begin, uint256 end) internal pure returns (address) {
+        (bool success, address value) = tryParseAddress(input, begin, end);
+        if (!success) revert StringsInvalidAddressFormat();
+        return value;
+    }
+
+    /**
+     * @dev Variant of {parseAddress-string} that returns false if the parsing fails because the input is not a properly
+     * formatted address. See {parseAddress-string} requirements.
+     */
+    function tryParseAddress(string memory input) internal pure returns (bool success, address value) {
+        return tryParseAddress(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseAddress-string-uint256-uint256} that returns false if the parsing fails because input is not a properly
+     * formatted address. See {parseAddress-string-uint256-uint256} requirements.
+     */
+    function tryParseAddress(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) internal pure returns (bool success, address value) {
+        if (end > bytes(input).length || begin > end) return (false, address(0));
+
+        bool hasPrefix = (end > begin + 1) && bytes2(_unsafeReadBytesOffset(bytes(input), begin)) == bytes2("0x"); // don't do out-of-bound (possibly unsafe) read if sub-string is empty
+        uint256 expectedLength = 40 + hasPrefix.toUint() * 2;
+
+        // check that input is the correct length
+        if (end - begin == expectedLength) {
+            // length guarantees that this does not overflow, and value is at most type(uint160).max
+            (bool s, uint256 v) = _tryParseHexUintUncheckedBounds(input, begin, end);
+            return (s, address(uint160(v)));
+        } else {
+            return (false, address(0));
+        }
+    }
+
+    function _tryParseChr(bytes1 chr) private pure returns (uint8) {
+        uint8 value = uint8(chr);
+
+        // Try to parse `chr`:
+        // - Case 1: [0-9]
+        // - Case 2: [a-f]
+        // - Case 3: [A-F]
+        // - otherwise not supported
+        unchecked {
+            if (value > 47 && value < 58) value -= 48;
+            else if (value > 96 && value < 103) value -= 87;
+            else if (value > 64 && value < 71) value -= 55;
+            else return type(uint8).max;
+        }
+
+        return value;
+    }
+
+    /**
+     * @dev Escape special characters in JSON strings. This can be useful to prevent JSON injection in NFT metadata.
+     *
+     * WARNING: This function should only be used in double quoted JSON strings. Single quotes are not escaped.
+     *
+     * NOTE: This function escapes all unicode characters, and not just the ones in ranges defined in section 2.5 of
+     * RFC-4627 (U+0000 to U+001F, U+0022 and U+005C). ECMAScript's `JSON.parse` does recover escaped unicode
+     * characters that are not in this range, but other tooling may provide different results.
+     */
+    function escapeJSON(string memory input) internal pure returns (string memory) {
+        bytes memory buffer = bytes(input);
+        bytes memory output = new bytes(2 * buffer.length); // worst case scenario
+        uint256 outputLength = 0;
+
+        for (uint256 i; i < buffer.length; ++i) {
+            bytes1 char = bytes1(_unsafeReadBytesOffset(buffer, i));
+            if (((SPECIAL_CHARS_LOOKUP & (1 << uint8(char))) != 0)) {
+                output[outputLength++] = "\\";
+                if (char == 0x08) output[outputLength++] = "b";
+                else if (char == 0x09) output[outputLength++] = "t";
+                else if (char == 0x0a) output[outputLength++] = "n";
+                else if (char == 0x0c) output[outputLength++] = "f";
+                else if (char == 0x0d) output[outputLength++] = "r";
+                else if (char == 0x5c) output[outputLength++] = "\\";
+                else if (char == 0x22) {
+                    // solhint-disable-next-line quotes
+                    output[outputLength++] = '"';
+                }
+            } else {
+                output[outputLength++] = char;
+            }
+        }
+        // write the actual length and deallocate unused memory
+        assembly ("memory-safe") {
+            mstore(output, outputLength)
+            mstore(0x40, add(output, shl(5, shr(5, add(outputLength, 63)))))
+        }
+
+        return string(output);
+    }
+
+    /**
+     * @dev Reads a bytes32 from a bytes array without bounds checking.
+     *
+     * NOTE: making this function internal would mean it could be used with memory unsafe offset, and marking the
+     * assembly block as such would prevent some optimizations.
+     */
+    function _unsafeReadBytesOffset(bytes memory buffer, uint256 offset) private pure returns (bytes32 value) {
+        // This is not memory safe in the general case, but all calls to this private function are within bounds.
+        assembly ("memory-safe") {
+            value := mload(add(add(buffer, 0x20), offset))
+        }
     }
 }
 
@@ -3368,9 +3799,9 @@ library ShortStrings {
 // File: @openzeppelin/contracts/interfaces/IERC5267.sol
 
 
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC5267.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC5267.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.4.16;
 
 interface IERC5267 {
     /**
@@ -3399,7 +3830,7 @@ interface IERC5267 {
 // File: @openzeppelin/contracts/utils/cryptography/EIP712.sol
 
 
-// OpenZeppelin Contracts (last updated v5.3.0) (utils/cryptography/EIP712.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (utils/cryptography/EIP712.sol)
 
 pragma solidity ^0.8.20;
 
@@ -3509,9 +3940,7 @@ abstract contract EIP712 is IERC5267 {
         return MessageHashUtils.toTypedDataHash(_domainSeparatorV4(), structHash);
     }
 
-    /**
-     * @inheritdoc IERC5267
-     */
+    /// @inheritdoc IERC5267
     function eip712Domain()
         public
         view
@@ -3612,7 +4041,7 @@ abstract contract Nonces {
 // File: @openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC20/extensions/ERC20Permit.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/ERC20Permit.sol)
 
 pragma solidity ^0.8.20;
 
@@ -3650,9 +4079,7 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
      */
     constructor(string memory name) EIP712(name, "1") {}
 
-    /**
-     * @inheritdoc IERC20Permit
-     */
+    /// @inheritdoc IERC20Permit
     function permit(
         address owner,
         address spender,
@@ -3678,16 +4105,12 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
         _approve(owner, spender, value);
     }
 
-    /**
-     * @inheritdoc IERC20Permit
-     */
+    /// @inheritdoc IERC20Permit
     function nonces(address owner) public view virtual override(IERC20Permit, Nonces) returns (uint256) {
         return super.nonces(owner);
     }
 
-    /**
-     * @inheritdoc IERC20Permit
-     */
+    /// @inheritdoc IERC20Permit
     // solhint-disable-next-line func-name-mixedcase
     function DOMAIN_SEPARATOR() external view virtual returns (bytes32) {
         return _domainSeparatorV4();
@@ -3697,8 +4120,8 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
 // File: @openzeppelin/contracts/governance/utils/IVotes.sol
 
 
-// OpenZeppelin Contracts (last updated v5.0.0) (governance/utils/IVotes.sol)
-pragma solidity ^0.8.20;
+// OpenZeppelin Contracts (last updated v5.4.0) (governance/utils/IVotes.sol)
+pragma solidity >=0.8.4;
 
 /**
  * @dev Common interface for {ERC20Votes}, {ERC721Votes}, and other {Votes}-enabled contracts.
@@ -3759,9 +4182,9 @@ interface IVotes {
 // File: @openzeppelin/contracts/interfaces/IERC6372.sol
 
 
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC6372.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC6372.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.4.16;
 
 interface IERC6372 {
     /**
@@ -3779,9 +4202,9 @@ interface IERC6372 {
 // File: @openzeppelin/contracts/interfaces/IERC5805.sol
 
 
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC5805.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC5805.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.8.4;
 
 
 
@@ -3790,7 +4213,7 @@ interface IERC5805 is IERC6372, IVotes {}
 // File: @openzeppelin/contracts/utils/structs/Checkpoints.sol
 
 
-// OpenZeppelin Contracts (last updated v5.3.0) (utils/structs/Checkpoints.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (utils/structs/Checkpoints.sol)
 // This file was procedurally generated from scripts/generate/templates/Checkpoints.js.
 
 pragma solidity ^0.8.20;
@@ -3858,7 +4281,7 @@ library Checkpoints {
      * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
      * if there is none.
      *
-     * NOTE: This is a variant of {upperLookup} that is optimised to find "recent" checkpoint (checkpoints with high
+     * NOTE: This is a variant of {upperLookup} that is optimized to find "recent" checkpoint (checkpoints with high
      * keys).
      */
     function upperLookupRecent(Trace224 storage self, uint32 key) internal view returns (uint224) {
@@ -4061,7 +4484,7 @@ library Checkpoints {
      * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
      * if there is none.
      *
-     * NOTE: This is a variant of {upperLookup} that is optimised to find "recent" checkpoint (checkpoints with high
+     * NOTE: This is a variant of {upperLookup} that is optimized to find "recent" checkpoint (checkpoints with high
      * keys).
      */
     function upperLookupRecent(Trace208 storage self, uint48 key) internal view returns (uint208) {
@@ -4264,7 +4687,7 @@ library Checkpoints {
      * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
      * if there is none.
      *
-     * NOTE: This is a variant of {upperLookup} that is optimised to find "recent" checkpoint (checkpoints with high
+     * NOTE: This is a variant of {upperLookup} that is optimized to find "recent" checkpoint (checkpoints with high
      * keys).
      */
     function upperLookupRecent(Trace160 storage self, uint96 key) internal view returns (uint160) {
@@ -4896,17 +5319,17 @@ abstract contract ERC20Votes is ERC20, Votes {
 // File: @openzeppelin/contracts/interfaces/IERC20.sol
 
 
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC20.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC20.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.4.16;
 
 
 // File: @openzeppelin/contracts/utils/introspection/IERC165.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (utils/introspection/IERC165.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (utils/introspection/IERC165.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.4.16;
 
 /**
  * @dev Interface of the ERC-165 standard, as defined in the
@@ -4932,17 +5355,17 @@ interface IERC165 {
 // File: @openzeppelin/contracts/interfaces/IERC165.sol
 
 
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC165.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC165.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.4.16;
 
 
 // File: @openzeppelin/contracts/interfaces/IERC1363.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (interfaces/IERC1363.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC1363.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.6.2;
 
 
 
@@ -5028,7 +5451,7 @@ interface IERC1363 is IERC20, IERC165 {
 // File: @openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 
 
-// OpenZeppelin Contracts (last updated v5.2.0) (token/ERC20/utils/SafeERC20.sol)
+// OpenZeppelin Contracts (last updated v5.3.0) (token/ERC20/utils/SafeERC20.sol)
 
 pragma solidity ^0.8.20;
 
@@ -5068,6 +5491,20 @@ library SafeERC20 {
      */
     function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
         _callOptionalReturn(token, abi.encodeCall(token.transferFrom, (from, to, value)));
+    }
+
+    /**
+     * @dev Variant of {safeTransfer} that returns a bool instead of reverting if the operation is not successful.
+     */
+    function trySafeTransfer(IERC20 token, address to, uint256 value) internal returns (bool) {
+        return _callOptionalReturnBool(token, abi.encodeCall(token.transfer, (to, value)));
+    }
+
+    /**
+     * @dev Variant of {safeTransferFrom} that returns a bool instead of reverting if the operation is not successful.
+     */
+    function trySafeTransferFrom(IERC20 token, address from, address to, uint256 value) internal returns (bool) {
+        return _callOptionalReturnBool(token, abi.encodeCall(token.transferFrom, (from, to, value)));
     }
 
     /**

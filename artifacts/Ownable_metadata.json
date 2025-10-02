@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.26+commit.8a97fa7a"
+		"version": "0.8.24+commit.e11b9ed9"
 	},
 	"language": "Solidity",
 	"output": {
@@ -119,7 +119,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/PadiStorage_flattened.sol": "Ownable"
+			"contracts/PadiTokenStable_flattened.sol": "Ownable"
 		},
 		"evmVersion": "cancun",
 		"libraries": {},
@@ -127,17 +127,17 @@
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": true,
+			"enabled": false,
 			"runs": 200
 		},
 		"remappings": []
 	},
 	"sources": {
-		"contracts/PadiStorage_flattened.sol": {
-			"keccak256": "0xc2f9cda0d6048df4c6f16a089dcaf6114bdef12f719d26cf8e253d76c179701e",
+		"contracts/PadiTokenStable_flattened.sol": {
+			"keccak256": "0xc37de53c5f86ffa932fbd877b5f99e5626ff8dd1c8aaa37a73603ee57e3e84f6",
 			"urls": [
-				"bzz-raw://8fd8fcfcb88308bfb4f5c8519c9e0feb5ee1f39dc6a293c9f91fa704206e60a7",
-				"dweb:/ipfs/QmPg75R1Le73GSyiy9RaiFAe93Ans11DnoUNfSJs2YaVYL"
+				"bzz-raw://3363f65742789d62965f2f9a45d7cd8227689c043f5c911e8ad8d66396a7f026",
+				"dweb:/ipfs/QmTCba5ymgzwsYp1Lf5A9GtYscv3jQrAv4EZa8QdkV3HJ6"
 			]
 		}
 	},

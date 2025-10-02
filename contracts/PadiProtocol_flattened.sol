@@ -410,9 +410,9 @@ interface IPadiStorage {
 // File: @openzeppelin/contracts/token/ERC20/IERC20.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC20/IERC20.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/IERC20.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.4.16;
 
 /**
  * @dev Interface of the ERC-20 standard as defined in the ERC.
@@ -492,17 +492,17 @@ interface IERC20 {
 // File: @openzeppelin/contracts/interfaces/IERC20.sol
 
 
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC20.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC20.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.4.16;
 
 
 // File: @openzeppelin/contracts/utils/introspection/IERC165.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (utils/introspection/IERC165.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (utils/introspection/IERC165.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.4.16;
 
 /**
  * @dev Interface of the ERC-165 standard, as defined in the
@@ -528,17 +528,17 @@ interface IERC165 {
 // File: @openzeppelin/contracts/interfaces/IERC165.sol
 
 
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC165.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC165.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.4.16;
 
 
 // File: @openzeppelin/contracts/interfaces/IERC1363.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (interfaces/IERC1363.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC1363.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.6.2;
 
 
 
@@ -624,7 +624,7 @@ interface IERC1363 is IERC20, IERC165 {
 // File: @openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 
 
-// OpenZeppelin Contracts (last updated v5.2.0) (token/ERC20/utils/SafeERC20.sol)
+// OpenZeppelin Contracts (last updated v5.3.0) (token/ERC20/utils/SafeERC20.sol)
 
 pragma solidity ^0.8.20;
 
@@ -664,6 +664,20 @@ library SafeERC20 {
      */
     function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
         _callOptionalReturn(token, abi.encodeCall(token.transferFrom, (from, to, value)));
+    }
+
+    /**
+     * @dev Variant of {safeTransfer} that returns a bool instead of reverting if the operation is not successful.
+     */
+    function trySafeTransfer(IERC20 token, address to, uint256 value) internal returns (bool) {
+        return _callOptionalReturnBool(token, abi.encodeCall(token.transfer, (to, value)));
+    }
+
+    /**
+     * @dev Variant of {safeTransferFrom} that returns a bool instead of reverting if the operation is not successful.
+     */
+    function trySafeTransferFrom(IERC20 token, address from, address to, uint256 value) internal returns (bool) {
+        return _callOptionalReturnBool(token, abi.encodeCall(token.transferFrom, (from, to, value)));
     }
 
     /**
@@ -957,9 +971,9 @@ abstract contract Ownable is Context {
 // File: @openzeppelin/contracts/token/ERC721/IERC721.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC721/IERC721.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC721/IERC721.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.6.2;
 
 
 /**
@@ -1094,9 +1108,9 @@ interface IERC721 is IERC165 {
 // File: @openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol
 
 
-// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC721/extensions/IERC721Metadata.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC721/extensions/IERC721Metadata.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.6.2;
 
 
 /**
@@ -1123,9 +1137,9 @@ interface IERC721Metadata is IERC721 {
 // File: @openzeppelin/contracts/token/ERC721/IERC721Receiver.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC721/IERC721Receiver.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC721/IERC721Receiver.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.5.0;
 
 /**
  * @title ERC-721 token receiver interface
@@ -1154,8 +1168,8 @@ interface IERC721Receiver {
 // File: @openzeppelin/contracts/interfaces/draft-IERC6093.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (interfaces/draft-IERC6093.sol)
-pragma solidity ^0.8.20;
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/draft-IERC6093.sol)
+pragma solidity >=0.8.4;
 
 /**
  * @dev Standard ERC-20 Errors
@@ -1318,7 +1332,7 @@ interface IERC1155Errors {
 // File: @openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC721/utils/ERC721Utils.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC721/utils/ERC721Utils.sol)
 
 pragma solidity ^0.8.20;
 
@@ -1333,7 +1347,7 @@ pragma solidity ^0.8.20;
  */
 library ERC721Utils {
     /**
-     * @dev Performs an acceptance check for the provided `operator` by calling {IERC721-onERC721Received}
+     * @dev Performs an acceptance check for the provided `operator` by calling {IERC721Receiver-onERC721Received}
      * on the `to` address. The `operator` is generally the address that initiated the token transfer (i.e. `msg.sender`).
      *
      * The acceptance call is not executed and treated as a no-op if the target address doesn't contain code (i.e. an EOA).
@@ -1359,7 +1373,7 @@ library ERC721Utils {
                     revert IERC721Errors.ERC721InvalidReceiver(to);
                 } else {
                     assembly ("memory-safe") {
-                        revert(add(32, reason), mload(reason))
+                        revert(add(reason, 0x20), mload(reason))
                     }
                 }
             }
@@ -2595,7 +2609,7 @@ library SafeCast {
 // File: @openzeppelin/contracts/utils/math/Math.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (utils/math/Math.sol)
+// OpenZeppelin Contracts (last updated v5.3.0) (utils/math/Math.sol)
 
 pragma solidity ^0.8.20;
 
@@ -2613,38 +2627,68 @@ library Math {
     }
 
     /**
-     * @dev Returns the addition of two unsigned integers, with an success flag (no overflow).
+     * @dev Return the 512-bit addition of two uint256.
+     *
+     * The result is stored in two 256 variables such that sum = high * 2²⁵⁶ + low.
+     */
+    function add512(uint256 a, uint256 b) internal pure returns (uint256 high, uint256 low) {
+        assembly ("memory-safe") {
+            low := add(a, b)
+            high := lt(low, a)
+        }
+    }
+
+    /**
+     * @dev Return the 512-bit multiplication of two uint256.
+     *
+     * The result is stored in two 256 variables such that product = high * 2²⁵⁶ + low.
+     */
+    function mul512(uint256 a, uint256 b) internal pure returns (uint256 high, uint256 low) {
+        // 512-bit multiply [high low] = x * y. Compute the product mod 2²⁵⁶ and mod 2²⁵⁶ - 1, then use
+        // the Chinese Remainder Theorem to reconstruct the 512 bit result. The result is stored in two 256
+        // variables such that product = high * 2²⁵⁶ + low.
+        assembly ("memory-safe") {
+            let mm := mulmod(a, b, not(0))
+            low := mul(a, b)
+            high := sub(sub(mm, low), lt(mm, low))
+        }
+    }
+
+    /**
+     * @dev Returns the addition of two unsigned integers, with a success flag (no overflow).
      */
     function tryAdd(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
         unchecked {
             uint256 c = a + b;
-            if (c < a) return (false, 0);
-            return (true, c);
+            success = c >= a;
+            result = c * SafeCast.toUint(success);
         }
     }
 
     /**
-     * @dev Returns the subtraction of two unsigned integers, with an success flag (no overflow).
+     * @dev Returns the subtraction of two unsigned integers, with a success flag (no overflow).
      */
     function trySub(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
         unchecked {
-            if (b > a) return (false, 0);
-            return (true, a - b);
+            uint256 c = a - b;
+            success = c <= a;
+            result = c * SafeCast.toUint(success);
         }
     }
 
     /**
-     * @dev Returns the multiplication of two unsigned integers, with an success flag (no overflow).
+     * @dev Returns the multiplication of two unsigned integers, with a success flag (no overflow).
      */
     function tryMul(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
         unchecked {
-            // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-            // benefit is lost if 'b' is also tested.
-            // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
-            if (a == 0) return (true, 0);
             uint256 c = a * b;
-            if (c / a != b) return (false, 0);
-            return (true, c);
+            assembly ("memory-safe") {
+                // Only true when the multiplication doesn't overflow
+                // (c / a == b) || (a == 0)
+                success := or(eq(div(c, a), b), iszero(a))
+            }
+            // equivalent to: success ? c : 0
+            result = c * SafeCast.toUint(success);
         }
     }
 
@@ -2653,8 +2697,11 @@ library Math {
      */
     function tryDiv(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
         unchecked {
-            if (b == 0) return (false, 0);
-            return (true, a / b);
+            success = b > 0;
+            assembly ("memory-safe") {
+                // The `DIV` opcode returns zero when the denominator is 0.
+                result := div(a, b)
+            }
         }
     }
 
@@ -2663,9 +2710,36 @@ library Math {
      */
     function tryMod(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
         unchecked {
-            if (b == 0) return (false, 0);
-            return (true, a % b);
+            success = b > 0;
+            assembly ("memory-safe") {
+                // The `MOD` opcode returns zero when the denominator is 0.
+                result := mod(a, b)
+            }
         }
+    }
+
+    /**
+     * @dev Unsigned saturating addition, bounds to `2²⁵⁶ - 1` instead of overflowing.
+     */
+    function saturatingAdd(uint256 a, uint256 b) internal pure returns (uint256) {
+        (bool success, uint256 result) = tryAdd(a, b);
+        return ternary(success, result, type(uint256).max);
+    }
+
+    /**
+     * @dev Unsigned saturating subtraction, bounds to zero instead of overflowing.
+     */
+    function saturatingSub(uint256 a, uint256 b) internal pure returns (uint256) {
+        (, uint256 result) = trySub(a, b);
+        return result;
+    }
+
+    /**
+     * @dev Unsigned saturating multiplication, bounds to `2²⁵⁶ - 1` instead of overflowing.
+     */
+    function saturatingMul(uint256 a, uint256 b) internal pure returns (uint256) {
+        (bool success, uint256 result) = tryMul(a, b);
+        return ternary(success, result, type(uint256).max);
     }
 
     /**
@@ -2738,26 +2812,18 @@ library Math {
      */
     function mulDiv(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 result) {
         unchecked {
-            // 512-bit multiply [prod1 prod0] = x * y. Compute the product mod 2²⁵⁶ and mod 2²⁵⁶ - 1, then use
-            // the Chinese Remainder Theorem to reconstruct the 512 bit result. The result is stored in two 256
-            // variables such that product = prod1 * 2²⁵⁶ + prod0.
-            uint256 prod0 = x * y; // Least significant 256 bits of the product
-            uint256 prod1; // Most significant 256 bits of the product
-            assembly {
-                let mm := mulmod(x, y, not(0))
-                prod1 := sub(sub(mm, prod0), lt(mm, prod0))
-            }
+            (uint256 high, uint256 low) = mul512(x, y);
 
             // Handle non-overflow cases, 256 by 256 division.
-            if (prod1 == 0) {
+            if (high == 0) {
                 // Solidity will revert if denominator == 0, unlike the div opcode on its own.
                 // The surrounding unchecked block does not change this fact.
                 // See https://docs.soliditylang.org/en/latest/control-structures.html#checked-or-unchecked-arithmetic.
-                return prod0 / denominator;
+                return low / denominator;
             }
 
             // Make sure the result is less than 2²⁵⁶. Also prevents denominator == 0.
-            if (denominator <= prod1) {
+            if (denominator <= high) {
                 Panic.panic(ternary(denominator == 0, Panic.DIVISION_BY_ZERO, Panic.UNDER_OVERFLOW));
             }
 
@@ -2765,34 +2831,34 @@ library Math {
             // 512 by 256 division.
             ///////////////////////////////////////////////
 
-            // Make division exact by subtracting the remainder from [prod1 prod0].
+            // Make division exact by subtracting the remainder from [high low].
             uint256 remainder;
-            assembly {
+            assembly ("memory-safe") {
                 // Compute remainder using mulmod.
                 remainder := mulmod(x, y, denominator)
 
                 // Subtract 256 bit number from 512 bit number.
-                prod1 := sub(prod1, gt(remainder, prod0))
-                prod0 := sub(prod0, remainder)
+                high := sub(high, gt(remainder, low))
+                low := sub(low, remainder)
             }
 
             // Factor powers of two out of denominator and compute largest power of two divisor of denominator.
             // Always >= 1. See https://cs.stackexchange.com/q/138556/92363.
 
             uint256 twos = denominator & (0 - denominator);
-            assembly {
+            assembly ("memory-safe") {
                 // Divide denominator by twos.
                 denominator := div(denominator, twos)
 
-                // Divide [prod1 prod0] by twos.
-                prod0 := div(prod0, twos)
+                // Divide [high low] by twos.
+                low := div(low, twos)
 
                 // Flip twos such that it is 2²⁵⁶ / twos. If twos is zero, then it becomes one.
                 twos := add(div(sub(0, twos), twos), 1)
             }
 
-            // Shift in bits from prod1 into prod0.
-            prod0 |= prod1 * twos;
+            // Shift in bits from high into low.
+            low |= high * twos;
 
             // Invert denominator mod 2²⁵⁶. Now that denominator is an odd number, it has an inverse modulo 2²⁵⁶ such
             // that denominator * inv ≡ 1 mod 2²⁵⁶. Compute the inverse by starting with a seed that is correct for
@@ -2810,9 +2876,9 @@ library Math {
 
             // Because the division is now exact we can divide by multiplying with the modular inverse of denominator.
             // This will give us the correct result modulo 2²⁵⁶. Since the preconditions guarantee that the outcome is
-            // less than 2²⁵⁶, this is the final result. We don't need to compute the high bits of the result and prod1
+            // less than 2²⁵⁶, this is the final result. We don't need to compute the high bits of the result and high
             // is no longer required.
-            result = prod0 * inverse;
+            result = low * inverse;
             return result;
         }
     }
@@ -2822,6 +2888,26 @@ library Math {
      */
     function mulDiv(uint256 x, uint256 y, uint256 denominator, Rounding rounding) internal pure returns (uint256) {
         return mulDiv(x, y, denominator) + SafeCast.toUint(unsignedRoundsUp(rounding) && mulmod(x, y, denominator) > 0);
+    }
+
+    /**
+     * @dev Calculates floor(x * y >> n) with full precision. Throws if result overflows a uint256.
+     */
+    function mulShr(uint256 x, uint256 y, uint8 n) internal pure returns (uint256 result) {
+        unchecked {
+            (uint256 high, uint256 low) = mul512(x, y);
+            if (high >= 1 << n) {
+                Panic.panic(Panic.UNDER_OVERFLOW);
+            }
+            return (high << (256 - n)) | (low >> n);
+        }
+    }
+
+    /**
+     * @dev Calculates x * y >> n with full precision, following the selected rounding direction.
+     */
+    function mulShr(uint256 x, uint256 y, uint8 n, Rounding rounding) internal pure returns (uint256) {
+        return mulShr(x, y, n) + SafeCast.toUint(unsignedRoundsUp(rounding) && mulmod(x, y, 1 << n) > 0);
     }
 
     /**
@@ -3132,41 +3218,45 @@ library Math {
      * @dev Return the log in base 2 of a positive value rounded towards zero.
      * Returns 0 if given 0.
      */
-    function log2(uint256 value) internal pure returns (uint256) {
-        uint256 result = 0;
-        uint256 exp;
-        unchecked {
-            exp = 128 * SafeCast.toUint(value > (1 << 128) - 1);
-            value >>= exp;
-            result += exp;
+    function log2(uint256 x) internal pure returns (uint256 r) {
+        // If value has upper 128 bits set, log2 result is at least 128
+        r = SafeCast.toUint(x > 0xffffffffffffffffffffffffffffffff) << 7;
+        // If upper 64 bits of 128-bit half set, add 64 to result
+        r |= SafeCast.toUint((x >> r) > 0xffffffffffffffff) << 6;
+        // If upper 32 bits of 64-bit half set, add 32 to result
+        r |= SafeCast.toUint((x >> r) > 0xffffffff) << 5;
+        // If upper 16 bits of 32-bit half set, add 16 to result
+        r |= SafeCast.toUint((x >> r) > 0xffff) << 4;
+        // If upper 8 bits of 16-bit half set, add 8 to result
+        r |= SafeCast.toUint((x >> r) > 0xff) << 3;
+        // If upper 4 bits of 8-bit half set, add 4 to result
+        r |= SafeCast.toUint((x >> r) > 0xf) << 2;
 
-            exp = 64 * SafeCast.toUint(value > (1 << 64) - 1);
-            value >>= exp;
-            result += exp;
-
-            exp = 32 * SafeCast.toUint(value > (1 << 32) - 1);
-            value >>= exp;
-            result += exp;
-
-            exp = 16 * SafeCast.toUint(value > (1 << 16) - 1);
-            value >>= exp;
-            result += exp;
-
-            exp = 8 * SafeCast.toUint(value > (1 << 8) - 1);
-            value >>= exp;
-            result += exp;
-
-            exp = 4 * SafeCast.toUint(value > (1 << 4) - 1);
-            value >>= exp;
-            result += exp;
-
-            exp = 2 * SafeCast.toUint(value > (1 << 2) - 1);
-            value >>= exp;
-            result += exp;
-
-            result += SafeCast.toUint(value > 1);
+        // Shifts value right by the current result and use it as an index into this lookup table:
+        //
+        // | x (4 bits) |  index  | table[index] = MSB position |
+        // |------------|---------|-----------------------------|
+        // |    0000    |    0    |        table[0] = 0         |
+        // |    0001    |    1    |        table[1] = 0         |
+        // |    0010    |    2    |        table[2] = 1         |
+        // |    0011    |    3    |        table[3] = 1         |
+        // |    0100    |    4    |        table[4] = 2         |
+        // |    0101    |    5    |        table[5] = 2         |
+        // |    0110    |    6    |        table[6] = 2         |
+        // |    0111    |    7    |        table[7] = 2         |
+        // |    1000    |    8    |        table[8] = 3         |
+        // |    1001    |    9    |        table[9] = 3         |
+        // |    1010    |   10    |        table[10] = 3        |
+        // |    1011    |   11    |        table[11] = 3        |
+        // |    1100    |   12    |        table[12] = 3        |
+        // |    1101    |   13    |        table[13] = 3        |
+        // |    1110    |   14    |        table[14] = 3        |
+        // |    1111    |   15    |        table[15] = 3        |
+        //
+        // The lookup table is represented as a 32-byte value with the MSB positions for 0-15 in the last 16 bytes.
+        assembly ("memory-safe") {
+            r := or(r, byte(shr(r, x), 0x0000010102020202030303030303030300000000000000000000000000000000))
         }
-        return result;
     }
 
     /**
@@ -3235,29 +3325,17 @@ library Math {
      *
      * Adding one to the result gives the number of pairs of hex symbols needed to represent `value` as a hex string.
      */
-    function log256(uint256 value) internal pure returns (uint256) {
-        uint256 result = 0;
-        uint256 isGt;
-        unchecked {
-            isGt = SafeCast.toUint(value > (1 << 128) - 1);
-            value >>= isGt * 128;
-            result += isGt * 16;
-
-            isGt = SafeCast.toUint(value > (1 << 64) - 1);
-            value >>= isGt * 64;
-            result += isGt * 8;
-
-            isGt = SafeCast.toUint(value > (1 << 32) - 1);
-            value >>= isGt * 32;
-            result += isGt * 4;
-
-            isGt = SafeCast.toUint(value > (1 << 16) - 1);
-            value >>= isGt * 16;
-            result += isGt * 2;
-
-            result += SafeCast.toUint(value > (1 << 8) - 1);
-        }
-        return result;
+    function log256(uint256 x) internal pure returns (uint256 r) {
+        // If value has upper 128 bits set, log2 result is at least 128
+        r = SafeCast.toUint(x > 0xffffffffffffffffffffffffffffffff) << 7;
+        // If upper 64 bits of 128-bit half set, add 64 to result
+        r |= SafeCast.toUint((x >> r) > 0xffffffffffffffff) << 6;
+        // If upper 32 bits of 64-bit half set, add 32 to result
+        r |= SafeCast.toUint((x >> r) > 0xffffffff) << 5;
+        // If upper 16 bits of 32-bit half set, add 16 to result
+        r |= SafeCast.toUint((x >> r) > 0xffff) << 4;
+        // Add 1 if upper 8 bits of 16-bit half set, and divide accumulated result by 8
+        return (r >> 3) | SafeCast.toUint((x >> r) > 0xff);
     }
 
     /**
@@ -3352,9 +3430,10 @@ library SignedMath {
 // File: @openzeppelin/contracts/utils/Strings.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (utils/Strings.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (utils/Strings.sol)
 
 pragma solidity ^0.8.20;
+
 
 
 
@@ -3362,13 +3441,33 @@ pragma solidity ^0.8.20;
  * @dev String operations.
  */
 library Strings {
+    using SafeCast for *;
+
     bytes16 private constant HEX_DIGITS = "0123456789abcdef";
     uint8 private constant ADDRESS_LENGTH = 20;
+    uint256 private constant SPECIAL_CHARS_LOOKUP =
+        (1 << 0x08) | // backspace
+            (1 << 0x09) | // tab
+            (1 << 0x0a) | // newline
+            (1 << 0x0c) | // form feed
+            (1 << 0x0d) | // carriage return
+            (1 << 0x22) | // double quote
+            (1 << 0x5c); // backslash
 
     /**
      * @dev The `value` string doesn't fit in the specified `length`.
      */
     error StringsInsufficientHexLength(uint256 value, uint256 length);
+
+    /**
+     * @dev The string being parsed contains characters that are not in scope of the given base.
+     */
+    error StringsInvalidChar();
+
+    /**
+     * @dev The string being parsed is not a properly formatted address.
+     */
+    error StringsInvalidAddressFormat();
 
     /**
      * @dev Converts a `uint256` to its ASCII `string` decimal representation.
@@ -3379,7 +3478,7 @@ library Strings {
             string memory buffer = new string(length);
             uint256 ptr;
             assembly ("memory-safe") {
-                ptr := add(buffer, add(32, length))
+                ptr := add(add(buffer, 0x20), length)
             }
             while (true) {
                 ptr--;
@@ -3465,12 +3564,365 @@ library Strings {
     function equal(string memory a, string memory b) internal pure returns (bool) {
         return bytes(a).length == bytes(b).length && keccak256(bytes(a)) == keccak256(bytes(b));
     }
+
+    /**
+     * @dev Parse a decimal string and returns the value as a `uint256`.
+     *
+     * Requirements:
+     * - The string must be formatted as `[0-9]*`
+     * - The result must fit into an `uint256` type
+     */
+    function parseUint(string memory input) internal pure returns (uint256) {
+        return parseUint(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseUint-string} that parses a substring of `input` located between position `begin` (included) and
+     * `end` (excluded).
+     *
+     * Requirements:
+     * - The substring must be formatted as `[0-9]*`
+     * - The result must fit into an `uint256` type
+     */
+    function parseUint(string memory input, uint256 begin, uint256 end) internal pure returns (uint256) {
+        (bool success, uint256 value) = tryParseUint(input, begin, end);
+        if (!success) revert StringsInvalidChar();
+        return value;
+    }
+
+    /**
+     * @dev Variant of {parseUint-string} that returns false if the parsing fails because of an invalid character.
+     *
+     * NOTE: This function will revert if the result does not fit in a `uint256`.
+     */
+    function tryParseUint(string memory input) internal pure returns (bool success, uint256 value) {
+        return _tryParseUintUncheckedBounds(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseUint-string-uint256-uint256} that returns false if the parsing fails because of an invalid
+     * character.
+     *
+     * NOTE: This function will revert if the result does not fit in a `uint256`.
+     */
+    function tryParseUint(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) internal pure returns (bool success, uint256 value) {
+        if (end > bytes(input).length || begin > end) return (false, 0);
+        return _tryParseUintUncheckedBounds(input, begin, end);
+    }
+
+    /**
+     * @dev Implementation of {tryParseUint-string-uint256-uint256} that does not check bounds. Caller should make sure that
+     * `begin <= end <= input.length`. Other inputs would result in undefined behavior.
+     */
+    function _tryParseUintUncheckedBounds(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) private pure returns (bool success, uint256 value) {
+        bytes memory buffer = bytes(input);
+
+        uint256 result = 0;
+        for (uint256 i = begin; i < end; ++i) {
+            uint8 chr = _tryParseChr(bytes1(_unsafeReadBytesOffset(buffer, i)));
+            if (chr > 9) return (false, 0);
+            result *= 10;
+            result += chr;
+        }
+        return (true, result);
+    }
+
+    /**
+     * @dev Parse a decimal string and returns the value as a `int256`.
+     *
+     * Requirements:
+     * - The string must be formatted as `[-+]?[0-9]*`
+     * - The result must fit in an `int256` type.
+     */
+    function parseInt(string memory input) internal pure returns (int256) {
+        return parseInt(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseInt-string} that parses a substring of `input` located between position `begin` (included) and
+     * `end` (excluded).
+     *
+     * Requirements:
+     * - The substring must be formatted as `[-+]?[0-9]*`
+     * - The result must fit in an `int256` type.
+     */
+    function parseInt(string memory input, uint256 begin, uint256 end) internal pure returns (int256) {
+        (bool success, int256 value) = tryParseInt(input, begin, end);
+        if (!success) revert StringsInvalidChar();
+        return value;
+    }
+
+    /**
+     * @dev Variant of {parseInt-string} that returns false if the parsing fails because of an invalid character or if
+     * the result does not fit in a `int256`.
+     *
+     * NOTE: This function will revert if the absolute value of the result does not fit in a `uint256`.
+     */
+    function tryParseInt(string memory input) internal pure returns (bool success, int256 value) {
+        return _tryParseIntUncheckedBounds(input, 0, bytes(input).length);
+    }
+
+    uint256 private constant ABS_MIN_INT256 = 2 ** 255;
+
+    /**
+     * @dev Variant of {parseInt-string-uint256-uint256} that returns false if the parsing fails because of an invalid
+     * character or if the result does not fit in a `int256`.
+     *
+     * NOTE: This function will revert if the absolute value of the result does not fit in a `uint256`.
+     */
+    function tryParseInt(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) internal pure returns (bool success, int256 value) {
+        if (end > bytes(input).length || begin > end) return (false, 0);
+        return _tryParseIntUncheckedBounds(input, begin, end);
+    }
+
+    /**
+     * @dev Implementation of {tryParseInt-string-uint256-uint256} that does not check bounds. Caller should make sure that
+     * `begin <= end <= input.length`. Other inputs would result in undefined behavior.
+     */
+    function _tryParseIntUncheckedBounds(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) private pure returns (bool success, int256 value) {
+        bytes memory buffer = bytes(input);
+
+        // Check presence of a negative sign.
+        bytes1 sign = begin == end ? bytes1(0) : bytes1(_unsafeReadBytesOffset(buffer, begin)); // don't do out-of-bound (possibly unsafe) read if sub-string is empty
+        bool positiveSign = sign == bytes1("+");
+        bool negativeSign = sign == bytes1("-");
+        uint256 offset = (positiveSign || negativeSign).toUint();
+
+        (bool absSuccess, uint256 absValue) = tryParseUint(input, begin + offset, end);
+
+        if (absSuccess && absValue < ABS_MIN_INT256) {
+            return (true, negativeSign ? -int256(absValue) : int256(absValue));
+        } else if (absSuccess && negativeSign && absValue == ABS_MIN_INT256) {
+            return (true, type(int256).min);
+        } else return (false, 0);
+    }
+
+    /**
+     * @dev Parse a hexadecimal string (with or without "0x" prefix), and returns the value as a `uint256`.
+     *
+     * Requirements:
+     * - The string must be formatted as `(0x)?[0-9a-fA-F]*`
+     * - The result must fit in an `uint256` type.
+     */
+    function parseHexUint(string memory input) internal pure returns (uint256) {
+        return parseHexUint(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseHexUint-string} that parses a substring of `input` located between position `begin` (included) and
+     * `end` (excluded).
+     *
+     * Requirements:
+     * - The substring must be formatted as `(0x)?[0-9a-fA-F]*`
+     * - The result must fit in an `uint256` type.
+     */
+    function parseHexUint(string memory input, uint256 begin, uint256 end) internal pure returns (uint256) {
+        (bool success, uint256 value) = tryParseHexUint(input, begin, end);
+        if (!success) revert StringsInvalidChar();
+        return value;
+    }
+
+    /**
+     * @dev Variant of {parseHexUint-string} that returns false if the parsing fails because of an invalid character.
+     *
+     * NOTE: This function will revert if the result does not fit in a `uint256`.
+     */
+    function tryParseHexUint(string memory input) internal pure returns (bool success, uint256 value) {
+        return _tryParseHexUintUncheckedBounds(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseHexUint-string-uint256-uint256} that returns false if the parsing fails because of an
+     * invalid character.
+     *
+     * NOTE: This function will revert if the result does not fit in a `uint256`.
+     */
+    function tryParseHexUint(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) internal pure returns (bool success, uint256 value) {
+        if (end > bytes(input).length || begin > end) return (false, 0);
+        return _tryParseHexUintUncheckedBounds(input, begin, end);
+    }
+
+    /**
+     * @dev Implementation of {tryParseHexUint-string-uint256-uint256} that does not check bounds. Caller should make sure that
+     * `begin <= end <= input.length`. Other inputs would result in undefined behavior.
+     */
+    function _tryParseHexUintUncheckedBounds(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) private pure returns (bool success, uint256 value) {
+        bytes memory buffer = bytes(input);
+
+        // skip 0x prefix if present
+        bool hasPrefix = (end > begin + 1) && bytes2(_unsafeReadBytesOffset(buffer, begin)) == bytes2("0x"); // don't do out-of-bound (possibly unsafe) read if sub-string is empty
+        uint256 offset = hasPrefix.toUint() * 2;
+
+        uint256 result = 0;
+        for (uint256 i = begin + offset; i < end; ++i) {
+            uint8 chr = _tryParseChr(bytes1(_unsafeReadBytesOffset(buffer, i)));
+            if (chr > 15) return (false, 0);
+            result *= 16;
+            unchecked {
+                // Multiplying by 16 is equivalent to a shift of 4 bits (with additional overflow check).
+                // This guarantees that adding a value < 16 will not cause an overflow, hence the unchecked.
+                result += chr;
+            }
+        }
+        return (true, result);
+    }
+
+    /**
+     * @dev Parse a hexadecimal string (with or without "0x" prefix), and returns the value as an `address`.
+     *
+     * Requirements:
+     * - The string must be formatted as `(0x)?[0-9a-fA-F]{40}`
+     */
+    function parseAddress(string memory input) internal pure returns (address) {
+        return parseAddress(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseAddress-string} that parses a substring of `input` located between position `begin` (included) and
+     * `end` (excluded).
+     *
+     * Requirements:
+     * - The substring must be formatted as `(0x)?[0-9a-fA-F]{40}`
+     */
+    function parseAddress(string memory input, uint256 begin, uint256 end) internal pure returns (address) {
+        (bool success, address value) = tryParseAddress(input, begin, end);
+        if (!success) revert StringsInvalidAddressFormat();
+        return value;
+    }
+
+    /**
+     * @dev Variant of {parseAddress-string} that returns false if the parsing fails because the input is not a properly
+     * formatted address. See {parseAddress-string} requirements.
+     */
+    function tryParseAddress(string memory input) internal pure returns (bool success, address value) {
+        return tryParseAddress(input, 0, bytes(input).length);
+    }
+
+    /**
+     * @dev Variant of {parseAddress-string-uint256-uint256} that returns false if the parsing fails because input is not a properly
+     * formatted address. See {parseAddress-string-uint256-uint256} requirements.
+     */
+    function tryParseAddress(
+        string memory input,
+        uint256 begin,
+        uint256 end
+    ) internal pure returns (bool success, address value) {
+        if (end > bytes(input).length || begin > end) return (false, address(0));
+
+        bool hasPrefix = (end > begin + 1) && bytes2(_unsafeReadBytesOffset(bytes(input), begin)) == bytes2("0x"); // don't do out-of-bound (possibly unsafe) read if sub-string is empty
+        uint256 expectedLength = 40 + hasPrefix.toUint() * 2;
+
+        // check that input is the correct length
+        if (end - begin == expectedLength) {
+            // length guarantees that this does not overflow, and value is at most type(uint160).max
+            (bool s, uint256 v) = _tryParseHexUintUncheckedBounds(input, begin, end);
+            return (s, address(uint160(v)));
+        } else {
+            return (false, address(0));
+        }
+    }
+
+    function _tryParseChr(bytes1 chr) private pure returns (uint8) {
+        uint8 value = uint8(chr);
+
+        // Try to parse `chr`:
+        // - Case 1: [0-9]
+        // - Case 2: [a-f]
+        // - Case 3: [A-F]
+        // - otherwise not supported
+        unchecked {
+            if (value > 47 && value < 58) value -= 48;
+            else if (value > 96 && value < 103) value -= 87;
+            else if (value > 64 && value < 71) value -= 55;
+            else return type(uint8).max;
+        }
+
+        return value;
+    }
+
+    /**
+     * @dev Escape special characters in JSON strings. This can be useful to prevent JSON injection in NFT metadata.
+     *
+     * WARNING: This function should only be used in double quoted JSON strings. Single quotes are not escaped.
+     *
+     * NOTE: This function escapes all unicode characters, and not just the ones in ranges defined in section 2.5 of
+     * RFC-4627 (U+0000 to U+001F, U+0022 and U+005C). ECMAScript's `JSON.parse` does recover escaped unicode
+     * characters that are not in this range, but other tooling may provide different results.
+     */
+    function escapeJSON(string memory input) internal pure returns (string memory) {
+        bytes memory buffer = bytes(input);
+        bytes memory output = new bytes(2 * buffer.length); // worst case scenario
+        uint256 outputLength = 0;
+
+        for (uint256 i; i < buffer.length; ++i) {
+            bytes1 char = bytes1(_unsafeReadBytesOffset(buffer, i));
+            if (((SPECIAL_CHARS_LOOKUP & (1 << uint8(char))) != 0)) {
+                output[outputLength++] = "\\";
+                if (char == 0x08) output[outputLength++] = "b";
+                else if (char == 0x09) output[outputLength++] = "t";
+                else if (char == 0x0a) output[outputLength++] = "n";
+                else if (char == 0x0c) output[outputLength++] = "f";
+                else if (char == 0x0d) output[outputLength++] = "r";
+                else if (char == 0x5c) output[outputLength++] = "\\";
+                else if (char == 0x22) {
+                    // solhint-disable-next-line quotes
+                    output[outputLength++] = '"';
+                }
+            } else {
+                output[outputLength++] = char;
+            }
+        }
+        // write the actual length and deallocate unused memory
+        assembly ("memory-safe") {
+            mstore(output, outputLength)
+            mstore(0x40, add(output, shl(5, shr(5, add(outputLength, 63)))))
+        }
+
+        return string(output);
+    }
+
+    /**
+     * @dev Reads a bytes32 from a bytes array without bounds checking.
+     *
+     * NOTE: making this function internal would mean it could be used with memory unsafe offset, and marking the
+     * assembly block as such would prevent some optimizations.
+     */
+    function _unsafeReadBytesOffset(bytes memory buffer, uint256 offset) private pure returns (bytes32 value) {
+        // This is not memory safe in the general case, but all calls to this private function are within bounds.
+        assembly ("memory-safe") {
+            value := mload(add(add(buffer, 0x20), offset))
+        }
+    }
 }
 
 // File: @openzeppelin/contracts/utils/introspection/ERC165.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (utils/introspection/ERC165.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (utils/introspection/ERC165.sol)
 
 pragma solidity ^0.8.20;
 
@@ -3488,9 +3940,7 @@ pragma solidity ^0.8.20;
  * ```
  */
 abstract contract ERC165 is IERC165 {
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
+    /// @inheritdoc IERC165
     function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
         return interfaceId == type(IERC165).interfaceId;
     }
@@ -3499,7 +3949,7 @@ abstract contract ERC165 is IERC165 {
 // File: @openzeppelin/contracts/token/ERC721/ERC721.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC721/ERC721.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC721/ERC721.sol)
 
 pragma solidity ^0.8.20;
 
@@ -3540,9 +3990,7 @@ abstract contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Er
         _symbol = symbol_;
     }
 
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
+    /// @inheritdoc IERC165
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
         return
             interfaceId == type(IERC721).interfaceId ||
@@ -3550,9 +3998,7 @@ abstract contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Er
             super.supportsInterface(interfaceId);
     }
 
-    /**
-     * @dev See {IERC721-balanceOf}.
-     */
+    /// @inheritdoc IERC721
     function balanceOf(address owner) public view virtual returns (uint256) {
         if (owner == address(0)) {
             revert ERC721InvalidOwner(address(0));
@@ -3560,30 +4006,22 @@ abstract contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Er
         return _balances[owner];
     }
 
-    /**
-     * @dev See {IERC721-ownerOf}.
-     */
+    /// @inheritdoc IERC721
     function ownerOf(uint256 tokenId) public view virtual returns (address) {
         return _requireOwned(tokenId);
     }
 
-    /**
-     * @dev See {IERC721Metadata-name}.
-     */
+    /// @inheritdoc IERC721Metadata
     function name() public view virtual returns (string memory) {
         return _name;
     }
 
-    /**
-     * @dev See {IERC721Metadata-symbol}.
-     */
+    /// @inheritdoc IERC721Metadata
     function symbol() public view virtual returns (string memory) {
         return _symbol;
     }
 
-    /**
-     * @dev See {IERC721Metadata-tokenURI}.
-     */
+    /// @inheritdoc IERC721Metadata
     function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
         _requireOwned(tokenId);
 
@@ -3600,39 +4038,29 @@ abstract contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Er
         return "";
     }
 
-    /**
-     * @dev See {IERC721-approve}.
-     */
+    /// @inheritdoc IERC721
     function approve(address to, uint256 tokenId) public virtual {
         _approve(to, tokenId, _msgSender());
     }
 
-    /**
-     * @dev See {IERC721-getApproved}.
-     */
+    /// @inheritdoc IERC721
     function getApproved(uint256 tokenId) public view virtual returns (address) {
         _requireOwned(tokenId);
 
         return _getApproved(tokenId);
     }
 
-    /**
-     * @dev See {IERC721-setApprovalForAll}.
-     */
+    /// @inheritdoc IERC721
     function setApprovalForAll(address operator, bool approved) public virtual {
         _setApprovalForAll(_msgSender(), operator, approved);
     }
 
-    /**
-     * @dev See {IERC721-isApprovedForAll}.
-     */
+    /// @inheritdoc IERC721
     function isApprovedForAll(address owner, address operator) public view virtual returns (bool) {
         return _operatorApprovals[owner][operator];
     }
 
-    /**
-     * @dev See {IERC721-transferFrom}.
-     */
+    /// @inheritdoc IERC721
     function transferFrom(address from, address to, uint256 tokenId) public virtual {
         if (to == address(0)) {
             revert ERC721InvalidReceiver(address(0));
@@ -3645,16 +4073,12 @@ abstract contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Er
         }
     }
 
-    /**
-     * @dev See {IERC721-safeTransferFrom}.
-     */
+    /// @inheritdoc IERC721
     function safeTransferFrom(address from, address to, uint256 tokenId) public {
         safeTransferFrom(from, to, tokenId, "");
     }
 
-    /**
-     * @dev See {IERC721-safeTransferFrom}.
-     */
+    /// @inheritdoc IERC721
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public virtual {
         transferFrom(from, to, tokenId);
         ERC721Utils.checkOnERC721Received(_msgSender(), from, to, tokenId, data);
@@ -3957,9 +4381,9 @@ abstract contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Er
 // File: @openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol
 
 
-// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC721/extensions/IERC721Enumerable.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC721/extensions/IERC721Enumerable.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.6.2;
 
 
 /**
@@ -3988,7 +4412,7 @@ interface IERC721Enumerable is IERC721 {
 // File: @openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC721/extensions/ERC721Enumerable.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC721/extensions/ERC721Enumerable.sol)
 
 pragma solidity ^0.8.20;
 
@@ -4021,16 +4445,12 @@ abstract contract ERC721Enumerable is ERC721, IERC721Enumerable {
      */
     error ERC721EnumerableForbiddenBatchMint();
 
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
+    /// @inheritdoc IERC165
     function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, ERC721) returns (bool) {
         return interfaceId == type(IERC721Enumerable).interfaceId || super.supportsInterface(interfaceId);
     }
 
-    /**
-     * @dev See {IERC721Enumerable-tokenOfOwnerByIndex}.
-     */
+    /// @inheritdoc IERC721Enumerable
     function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual returns (uint256) {
         if (index >= balanceOf(owner)) {
             revert ERC721OutOfBoundsIndex(owner, index);
@@ -4038,16 +4458,12 @@ abstract contract ERC721Enumerable is ERC721, IERC721Enumerable {
         return _ownedTokens[owner][index];
     }
 
-    /**
-     * @dev See {IERC721Enumerable-totalSupply}.
-     */
+    /// @inheritdoc IERC721Enumerable
     function totalSupply() public view virtual returns (uint256) {
         return _allTokens.length;
     }
 
-    /**
-     * @dev See {IERC721Enumerable-tokenByIndex}.
-     */
+    /// @inheritdoc IERC721Enumerable
     function tokenByIndex(uint256 index) public view virtual returns (uint256) {
         if (index >= totalSupply()) {
             revert ERC721OutOfBoundsIndex(address(0), index);
@@ -4055,9 +4471,7 @@ abstract contract ERC721Enumerable is ERC721, IERC721Enumerable {
         return _allTokens[index];
     }
 
-    /**
-     * @dev See {ERC721-_update}.
-     */
+    /// @inheritdoc ERC721
     function _update(address to, uint256 tokenId, address auth) internal virtual override returns (address) {
         address previousOwner = super._update(to, tokenId, auth);
 
@@ -4164,17 +4578,17 @@ abstract contract ERC721Enumerable is ERC721, IERC721Enumerable {
 // File: @openzeppelin/contracts/interfaces/IERC721.sol
 
 
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC721.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC721.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.6.2;
 
 
 // File: @openzeppelin/contracts/interfaces/IERC4906.sol
 
 
-// OpenZeppelin Contracts (last updated v5.1.0) (interfaces/IERC4906.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC4906.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.6.2;
 
 
 
@@ -4194,9 +4608,10 @@ interface IERC4906 is IERC165, IERC721 {
 // File: @openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol
 
 
-// OpenZeppelin Contracts (last updated v5.3.0) (token/ERC721/extensions/ERC721URIStorage.sol)
+// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC721/extensions/ERC721URIStorage.sol)
 
 pragma solidity ^0.8.20;
+
 
 
 
@@ -4215,16 +4630,12 @@ abstract contract ERC721URIStorage is IERC4906, ERC721 {
     // Optional mapping for token URIs
     mapping(uint256 tokenId => string) private _tokenURIs;
 
-    /**
-     * @dev See {IERC165-supportsInterface}
-     */
+    /// @inheritdoc IERC165
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, IERC165) returns (bool) {
         return interfaceId == ERC4906_INTERFACE_ID || super.supportsInterface(interfaceId);
     }
 
-    /**
-     * @dev See {IERC721Metadata-tokenURI}.
-     */
+    /// @inheritdoc IERC721Metadata
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         _requireOwned(tokenId);
 
@@ -4254,6 +4665,753 @@ abstract contract ERC721URIStorage is IERC4906, ERC721 {
     }
 }
 
+// File: @openzeppelin/contracts/utils/cryptography/ECDSA.sol
+
+
+// OpenZeppelin Contracts (last updated v5.1.0) (utils/cryptography/ECDSA.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Elliptic Curve Digital Signature Algorithm (ECDSA) operations.
+ *
+ * These functions can be used to verify that a message was signed by the holder
+ * of the private keys of a given address.
+ */
+library ECDSA {
+    enum RecoverError {
+        NoError,
+        InvalidSignature,
+        InvalidSignatureLength,
+        InvalidSignatureS
+    }
+
+    /**
+     * @dev The signature derives the `address(0)`.
+     */
+    error ECDSAInvalidSignature();
+
+    /**
+     * @dev The signature has an invalid length.
+     */
+    error ECDSAInvalidSignatureLength(uint256 length);
+
+    /**
+     * @dev The signature has an S value that is in the upper half order.
+     */
+    error ECDSAInvalidSignatureS(bytes32 s);
+
+    /**
+     * @dev Returns the address that signed a hashed message (`hash`) with `signature` or an error. This will not
+     * return address(0) without also returning an error description. Errors are documented using an enum (error type)
+     * and a bytes32 providing additional information about the error.
+     *
+     * If no error is returned, then the address can be used for verification purposes.
+     *
+     * The `ecrecover` EVM precompile allows for malleable (non-unique) signatures:
+     * this function rejects them by requiring the `s` value to be in the lower
+     * half order, and the `v` value to be either 27 or 28.
+     *
+     * IMPORTANT: `hash` _must_ be the result of a hash operation for the
+     * verification to be secure: it is possible to craft signatures that
+     * recover to arbitrary addresses for non-hashed data. A safe way to ensure
+     * this is by receiving a hash of the original message (which may otherwise
+     * be too long), and then calling {MessageHashUtils-toEthSignedMessageHash} on it.
+     *
+     * Documentation for signature generation:
+     * - with https://web3js.readthedocs.io/en/v1.3.4/web3-eth-accounts.html#sign[Web3.js]
+     * - with https://docs.ethers.io/v5/api/signer/#Signer-signMessage[ethers]
+     */
+    function tryRecover(
+        bytes32 hash,
+        bytes memory signature
+    ) internal pure returns (address recovered, RecoverError err, bytes32 errArg) {
+        if (signature.length == 65) {
+            bytes32 r;
+            bytes32 s;
+            uint8 v;
+            // ecrecover takes the signature parameters, and the only way to get them
+            // currently is to use assembly.
+            assembly ("memory-safe") {
+                r := mload(add(signature, 0x20))
+                s := mload(add(signature, 0x40))
+                v := byte(0, mload(add(signature, 0x60)))
+            }
+            return tryRecover(hash, v, r, s);
+        } else {
+            return (address(0), RecoverError.InvalidSignatureLength, bytes32(signature.length));
+        }
+    }
+
+    /**
+     * @dev Returns the address that signed a hashed message (`hash`) with
+     * `signature`. This address can then be used for verification purposes.
+     *
+     * The `ecrecover` EVM precompile allows for malleable (non-unique) signatures:
+     * this function rejects them by requiring the `s` value to be in the lower
+     * half order, and the `v` value to be either 27 or 28.
+     *
+     * IMPORTANT: `hash` _must_ be the result of a hash operation for the
+     * verification to be secure: it is possible to craft signatures that
+     * recover to arbitrary addresses for non-hashed data. A safe way to ensure
+     * this is by receiving a hash of the original message (which may otherwise
+     * be too long), and then calling {MessageHashUtils-toEthSignedMessageHash} on it.
+     */
+    function recover(bytes32 hash, bytes memory signature) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, signature);
+        _throwError(error, errorArg);
+        return recovered;
+    }
+
+    /**
+     * @dev Overload of {ECDSA-tryRecover} that receives the `r` and `vs` short-signature fields separately.
+     *
+     * See https://eips.ethereum.org/EIPS/eip-2098[ERC-2098 short signatures]
+     */
+    function tryRecover(
+        bytes32 hash,
+        bytes32 r,
+        bytes32 vs
+    ) internal pure returns (address recovered, RecoverError err, bytes32 errArg) {
+        unchecked {
+            bytes32 s = vs & bytes32(0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff);
+            // We do not check for an overflow here since the shift operation results in 0 or 1.
+            uint8 v = uint8((uint256(vs) >> 255) + 27);
+            return tryRecover(hash, v, r, s);
+        }
+    }
+
+    /**
+     * @dev Overload of {ECDSA-recover} that receives the `r and `vs` short-signature fields separately.
+     */
+    function recover(bytes32 hash, bytes32 r, bytes32 vs) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, r, vs);
+        _throwError(error, errorArg);
+        return recovered;
+    }
+
+    /**
+     * @dev Overload of {ECDSA-tryRecover} that receives the `v`,
+     * `r` and `s` signature fields separately.
+     */
+    function tryRecover(
+        bytes32 hash,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal pure returns (address recovered, RecoverError err, bytes32 errArg) {
+        // EIP-2 still allows signature malleability for ecrecover(). Remove this possibility and make the signature
+        // unique. Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
+        // the valid range for s in (301): 0 < s < secp256k1n ÷ 2 + 1, and for v in (302): v ∈ {27, 28}. Most
+        // signatures from current libraries generate a unique signature with an s-value in the lower half order.
+        //
+        // If your library generates malleable signatures, such as s-values in the upper range, calculate a new s-value
+        // with 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 - s1 and flip v from 27 to 28 or
+        // vice versa. If your library also generates signatures with 0/1 for v instead 27/28, add 27 to v to accept
+        // these malleable signatures as well.
+        if (uint256(s) > 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0) {
+            return (address(0), RecoverError.InvalidSignatureS, s);
+        }
+
+        // If the signature is valid (and not malleable), return the signer address
+        address signer = ecrecover(hash, v, r, s);
+        if (signer == address(0)) {
+            return (address(0), RecoverError.InvalidSignature, bytes32(0));
+        }
+
+        return (signer, RecoverError.NoError, bytes32(0));
+    }
+
+    /**
+     * @dev Overload of {ECDSA-recover} that receives the `v`,
+     * `r` and `s` signature fields separately.
+     */
+    function recover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, v, r, s);
+        _throwError(error, errorArg);
+        return recovered;
+    }
+
+    /**
+     * @dev Optionally reverts with the corresponding custom error according to the `error` argument provided.
+     */
+    function _throwError(RecoverError error, bytes32 errorArg) private pure {
+        if (error == RecoverError.NoError) {
+            return; // no error: do nothing
+        } else if (error == RecoverError.InvalidSignature) {
+            revert ECDSAInvalidSignature();
+        } else if (error == RecoverError.InvalidSignatureLength) {
+            revert ECDSAInvalidSignatureLength(uint256(errorArg));
+        } else if (error == RecoverError.InvalidSignatureS) {
+            revert ECDSAInvalidSignatureS(errorArg);
+        }
+    }
+}
+
+// File: @openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol
+
+
+// OpenZeppelin Contracts (last updated v5.3.0) (utils/cryptography/MessageHashUtils.sol)
+
+pragma solidity ^0.8.20;
+
+
+/**
+ * @dev Signature message hash utilities for producing digests to be consumed by {ECDSA} recovery or signing.
+ *
+ * The library provides methods for generating a hash of a message that conforms to the
+ * https://eips.ethereum.org/EIPS/eip-191[ERC-191] and https://eips.ethereum.org/EIPS/eip-712[EIP 712]
+ * specifications.
+ */
+library MessageHashUtils {
+    /**
+     * @dev Returns the keccak256 digest of an ERC-191 signed data with version
+     * `0x45` (`personal_sign` messages).
+     *
+     * The digest is calculated by prefixing a bytes32 `messageHash` with
+     * `"\x19Ethereum Signed Message:\n32"` and hashing the result. It corresponds with the
+     * hash signed when using the https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_sign[`eth_sign`] JSON-RPC method.
+     *
+     * NOTE: The `messageHash` parameter is intended to be the result of hashing a raw message with
+     * keccak256, although any bytes32 value can be safely used because the final digest will
+     * be re-hashed.
+     *
+     * See {ECDSA-recover}.
+     */
+    function toEthSignedMessageHash(bytes32 messageHash) internal pure returns (bytes32 digest) {
+        assembly ("memory-safe") {
+            mstore(0x00, "\x19Ethereum Signed Message:\n32") // 32 is the bytes-length of messageHash
+            mstore(0x1c, messageHash) // 0x1c (28) is the length of the prefix
+            digest := keccak256(0x00, 0x3c) // 0x3c is the length of the prefix (0x1c) + messageHash (0x20)
+        }
+    }
+
+    /**
+     * @dev Returns the keccak256 digest of an ERC-191 signed data with version
+     * `0x45` (`personal_sign` messages).
+     *
+     * The digest is calculated by prefixing an arbitrary `message` with
+     * `"\x19Ethereum Signed Message:\n" + len(message)` and hashing the result. It corresponds with the
+     * hash signed when using the https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_sign[`eth_sign`] JSON-RPC method.
+     *
+     * See {ECDSA-recover}.
+     */
+    function toEthSignedMessageHash(bytes memory message) internal pure returns (bytes32) {
+        return
+            keccak256(bytes.concat("\x19Ethereum Signed Message:\n", bytes(Strings.toString(message.length)), message));
+    }
+
+    /**
+     * @dev Returns the keccak256 digest of an ERC-191 signed data with version
+     * `0x00` (data with intended validator).
+     *
+     * The digest is calculated by prefixing an arbitrary `data` with `"\x19\x00"` and the intended
+     * `validator` address. Then hashing the result.
+     *
+     * See {ECDSA-recover}.
+     */
+    function toDataWithIntendedValidatorHash(address validator, bytes memory data) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(hex"19_00", validator, data));
+    }
+
+    /**
+     * @dev Variant of {toDataWithIntendedValidatorHash-address-bytes} optimized for cases where `data` is a bytes32.
+     */
+    function toDataWithIntendedValidatorHash(
+        address validator,
+        bytes32 messageHash
+    ) internal pure returns (bytes32 digest) {
+        assembly ("memory-safe") {
+            mstore(0x00, hex"19_00")
+            mstore(0x02, shl(96, validator))
+            mstore(0x16, messageHash)
+            digest := keccak256(0x00, 0x36)
+        }
+    }
+
+    /**
+     * @dev Returns the keccak256 digest of an EIP-712 typed data (ERC-191 version `0x01`).
+     *
+     * The digest is calculated from a `domainSeparator` and a `structHash`, by prefixing them with
+     * `\x19\x01` and hashing the result. It corresponds to the hash signed by the
+     * https://eips.ethereum.org/EIPS/eip-712[`eth_signTypedData`] JSON-RPC method as part of EIP-712.
+     *
+     * See {ECDSA-recover}.
+     */
+    function toTypedDataHash(bytes32 domainSeparator, bytes32 structHash) internal pure returns (bytes32 digest) {
+        assembly ("memory-safe") {
+            let ptr := mload(0x40)
+            mstore(ptr, hex"19_01")
+            mstore(add(ptr, 0x02), domainSeparator)
+            mstore(add(ptr, 0x22), structHash)
+            digest := keccak256(ptr, 0x42)
+        }
+    }
+}
+
+// File: @openzeppelin/contracts/utils/StorageSlot.sol
+
+
+// OpenZeppelin Contracts (last updated v5.1.0) (utils/StorageSlot.sol)
+// This file was procedurally generated from scripts/generate/templates/StorageSlot.js.
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Library for reading and writing primitive types to specific storage slots.
+ *
+ * Storage slots are often used to avoid storage conflict when dealing with upgradeable contracts.
+ * This library helps with reading and writing to such slots without the need for inline assembly.
+ *
+ * The functions in this library return Slot structs that contain a `value` member that can be used to read or write.
+ *
+ * Example usage to set ERC-1967 implementation slot:
+ * ```solidity
+ * contract ERC1967 {
+ *     // Define the slot. Alternatively, use the SlotDerivation library to derive the slot.
+ *     bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+ *
+ *     function _getImplementation() internal view returns (address) {
+ *         return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
+ *     }
+ *
+ *     function _setImplementation(address newImplementation) internal {
+ *         require(newImplementation.code.length > 0);
+ *         StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;
+ *     }
+ * }
+ * ```
+ *
+ * TIP: Consider using this library along with {SlotDerivation}.
+ */
+library StorageSlot {
+    struct AddressSlot {
+        address value;
+    }
+
+    struct BooleanSlot {
+        bool value;
+    }
+
+    struct Bytes32Slot {
+        bytes32 value;
+    }
+
+    struct Uint256Slot {
+        uint256 value;
+    }
+
+    struct Int256Slot {
+        int256 value;
+    }
+
+    struct StringSlot {
+        string value;
+    }
+
+    struct BytesSlot {
+        bytes value;
+    }
+
+    /**
+     * @dev Returns an `AddressSlot` with member `value` located at `slot`.
+     */
+    function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
+        assembly ("memory-safe") {
+            r.slot := slot
+        }
+    }
+
+    /**
+     * @dev Returns a `BooleanSlot` with member `value` located at `slot`.
+     */
+    function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r) {
+        assembly ("memory-safe") {
+            r.slot := slot
+        }
+    }
+
+    /**
+     * @dev Returns a `Bytes32Slot` with member `value` located at `slot`.
+     */
+    function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r) {
+        assembly ("memory-safe") {
+            r.slot := slot
+        }
+    }
+
+    /**
+     * @dev Returns a `Uint256Slot` with member `value` located at `slot`.
+     */
+    function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
+        assembly ("memory-safe") {
+            r.slot := slot
+        }
+    }
+
+    /**
+     * @dev Returns a `Int256Slot` with member `value` located at `slot`.
+     */
+    function getInt256Slot(bytes32 slot) internal pure returns (Int256Slot storage r) {
+        assembly ("memory-safe") {
+            r.slot := slot
+        }
+    }
+
+    /**
+     * @dev Returns a `StringSlot` with member `value` located at `slot`.
+     */
+    function getStringSlot(bytes32 slot) internal pure returns (StringSlot storage r) {
+        assembly ("memory-safe") {
+            r.slot := slot
+        }
+    }
+
+    /**
+     * @dev Returns an `StringSlot` representation of the string storage pointer `store`.
+     */
+    function getStringSlot(string storage store) internal pure returns (StringSlot storage r) {
+        assembly ("memory-safe") {
+            r.slot := store.slot
+        }
+    }
+
+    /**
+     * @dev Returns a `BytesSlot` with member `value` located at `slot`.
+     */
+    function getBytesSlot(bytes32 slot) internal pure returns (BytesSlot storage r) {
+        assembly ("memory-safe") {
+            r.slot := slot
+        }
+    }
+
+    /**
+     * @dev Returns an `BytesSlot` representation of the bytes storage pointer `store`.
+     */
+    function getBytesSlot(bytes storage store) internal pure returns (BytesSlot storage r) {
+        assembly ("memory-safe") {
+            r.slot := store.slot
+        }
+    }
+}
+
+// File: @openzeppelin/contracts/utils/ShortStrings.sol
+
+
+// OpenZeppelin Contracts (last updated v5.3.0) (utils/ShortStrings.sol)
+
+pragma solidity ^0.8.20;
+
+
+// | string  | 0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA   |
+// | length  | 0x                                                              BB |
+type ShortString is bytes32;
+
+/**
+ * @dev This library provides functions to convert short memory strings
+ * into a `ShortString` type that can be used as an immutable variable.
+ *
+ * Strings of arbitrary length can be optimized using this library if
+ * they are short enough (up to 31 bytes) by packing them with their
+ * length (1 byte) in a single EVM word (32 bytes). Additionally, a
+ * fallback mechanism can be used for every other case.
+ *
+ * Usage example:
+ *
+ * ```solidity
+ * contract Named {
+ *     using ShortStrings for *;
+ *
+ *     ShortString private immutable _name;
+ *     string private _nameFallback;
+ *
+ *     constructor(string memory contractName) {
+ *         _name = contractName.toShortStringWithFallback(_nameFallback);
+ *     }
+ *
+ *     function name() external view returns (string memory) {
+ *         return _name.toStringWithFallback(_nameFallback);
+ *     }
+ * }
+ * ```
+ */
+library ShortStrings {
+    // Used as an identifier for strings longer than 31 bytes.
+    bytes32 private constant FALLBACK_SENTINEL = 0x00000000000000000000000000000000000000000000000000000000000000FF;
+
+    error StringTooLong(string str);
+    error InvalidShortString();
+
+    /**
+     * @dev Encode a string of at most 31 chars into a `ShortString`.
+     *
+     * This will trigger a `StringTooLong` error is the input string is too long.
+     */
+    function toShortString(string memory str) internal pure returns (ShortString) {
+        bytes memory bstr = bytes(str);
+        if (bstr.length > 31) {
+            revert StringTooLong(str);
+        }
+        return ShortString.wrap(bytes32(uint256(bytes32(bstr)) | bstr.length));
+    }
+
+    /**
+     * @dev Decode a `ShortString` back to a "normal" string.
+     */
+    function toString(ShortString sstr) internal pure returns (string memory) {
+        uint256 len = byteLength(sstr);
+        // using `new string(len)` would work locally but is not memory safe.
+        string memory str = new string(32);
+        assembly ("memory-safe") {
+            mstore(str, len)
+            mstore(add(str, 0x20), sstr)
+        }
+        return str;
+    }
+
+    /**
+     * @dev Return the length of a `ShortString`.
+     */
+    function byteLength(ShortString sstr) internal pure returns (uint256) {
+        uint256 result = uint256(ShortString.unwrap(sstr)) & 0xFF;
+        if (result > 31) {
+            revert InvalidShortString();
+        }
+        return result;
+    }
+
+    /**
+     * @dev Encode a string into a `ShortString`, or write it to storage if it is too long.
+     */
+    function toShortStringWithFallback(string memory value, string storage store) internal returns (ShortString) {
+        if (bytes(value).length < 32) {
+            return toShortString(value);
+        } else {
+            StorageSlot.getStringSlot(store).value = value;
+            return ShortString.wrap(FALLBACK_SENTINEL);
+        }
+    }
+
+    /**
+     * @dev Decode a string that was encoded to `ShortString` or written to storage using {toShortStringWithFallback}.
+     */
+    function toStringWithFallback(ShortString value, string storage store) internal pure returns (string memory) {
+        if (ShortString.unwrap(value) != FALLBACK_SENTINEL) {
+            return toString(value);
+        } else {
+            return store;
+        }
+    }
+
+    /**
+     * @dev Return the length of a string that was encoded to `ShortString` or written to storage using
+     * {toShortStringWithFallback}.
+     *
+     * WARNING: This will return the "byte length" of the string. This may not reflect the actual length in terms of
+     * actual characters as the UTF-8 encoding of a single character can span over multiple bytes.
+     */
+    function byteLengthWithFallback(ShortString value, string storage store) internal view returns (uint256) {
+        if (ShortString.unwrap(value) != FALLBACK_SENTINEL) {
+            return byteLength(value);
+        } else {
+            return bytes(store).length;
+        }
+    }
+}
+
+// File: @openzeppelin/contracts/interfaces/IERC5267.sol
+
+
+// OpenZeppelin Contracts (last updated v5.4.0) (interfaces/IERC5267.sol)
+
+pragma solidity >=0.4.16;
+
+interface IERC5267 {
+    /**
+     * @dev MAY be emitted to signal that the domain could have changed.
+     */
+    event EIP712DomainChanged();
+
+    /**
+     * @dev returns the fields and values that describe the domain separator used by this contract for EIP-712
+     * signature.
+     */
+    function eip712Domain()
+        external
+        view
+        returns (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        );
+}
+
+// File: @openzeppelin/contracts/utils/cryptography/EIP712.sol
+
+
+// OpenZeppelin Contracts (last updated v5.4.0) (utils/cryptography/EIP712.sol)
+
+pragma solidity ^0.8.20;
+
+
+
+
+/**
+ * @dev https://eips.ethereum.org/EIPS/eip-712[EIP-712] is a standard for hashing and signing of typed structured data.
+ *
+ * The encoding scheme specified in the EIP requires a domain separator and a hash of the typed structured data, whose
+ * encoding is very generic and therefore its implementation in Solidity is not feasible, thus this contract
+ * does not implement the encoding itself. Protocols need to implement the type-specific encoding they need in order to
+ * produce the hash of their typed data using a combination of `abi.encode` and `keccak256`.
+ *
+ * This contract implements the EIP-712 domain separator ({_domainSeparatorV4}) that is used as part of the encoding
+ * scheme, and the final step of the encoding to obtain the message digest that is then signed via ECDSA
+ * ({_hashTypedDataV4}).
+ *
+ * The implementation of the domain separator was designed to be as efficient as possible while still properly updating
+ * the chain id to protect against replay attacks on an eventual fork of the chain.
+ *
+ * NOTE: This contract implements the version of the encoding known as "v4", as implemented by the JSON RPC method
+ * https://docs.metamask.io/guide/signing-data.html[`eth_signTypedDataV4` in MetaMask].
+ *
+ * NOTE: In the upgradeable version of this contract, the cached values will correspond to the address, and the domain
+ * separator of the implementation contract. This will cause the {_domainSeparatorV4} function to always rebuild the
+ * separator from the immutable values, which is cheaper than accessing a cached version in cold storage.
+ *
+ * @custom:oz-upgrades-unsafe-allow state-variable-immutable
+ */
+abstract contract EIP712 is IERC5267 {
+    using ShortStrings for *;
+
+    bytes32 private constant TYPE_HASH =
+        keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+
+    // Cache the domain separator as an immutable value, but also store the chain id that it corresponds to, in order to
+    // invalidate the cached domain separator if the chain id changes.
+    bytes32 private immutable _cachedDomainSeparator;
+    uint256 private immutable _cachedChainId;
+    address private immutable _cachedThis;
+
+    bytes32 private immutable _hashedName;
+    bytes32 private immutable _hashedVersion;
+
+    ShortString private immutable _name;
+    ShortString private immutable _version;
+    // slither-disable-next-line constable-states
+    string private _nameFallback;
+    // slither-disable-next-line constable-states
+    string private _versionFallback;
+
+    /**
+     * @dev Initializes the domain separator and parameter caches.
+     *
+     * The meaning of `name` and `version` is specified in
+     * https://eips.ethereum.org/EIPS/eip-712#definition-of-domainseparator[EIP-712]:
+     *
+     * - `name`: the user readable name of the signing domain, i.e. the name of the DApp or the protocol.
+     * - `version`: the current major version of the signing domain.
+     *
+     * NOTE: These parameters cannot be changed except through a xref:learn::upgrading-smart-contracts.adoc[smart
+     * contract upgrade].
+     */
+    constructor(string memory name, string memory version) {
+        _name = name.toShortStringWithFallback(_nameFallback);
+        _version = version.toShortStringWithFallback(_versionFallback);
+        _hashedName = keccak256(bytes(name));
+        _hashedVersion = keccak256(bytes(version));
+
+        _cachedChainId = block.chainid;
+        _cachedDomainSeparator = _buildDomainSeparator();
+        _cachedThis = address(this);
+    }
+
+    /**
+     * @dev Returns the domain separator for the current chain.
+     */
+    function _domainSeparatorV4() internal view returns (bytes32) {
+        if (address(this) == _cachedThis && block.chainid == _cachedChainId) {
+            return _cachedDomainSeparator;
+        } else {
+            return _buildDomainSeparator();
+        }
+    }
+
+    function _buildDomainSeparator() private view returns (bytes32) {
+        return keccak256(abi.encode(TYPE_HASH, _hashedName, _hashedVersion, block.chainid, address(this)));
+    }
+
+    /**
+     * @dev Given an already https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct[hashed struct], this
+     * function returns the hash of the fully encoded EIP712 message for this domain.
+     *
+     * This hash can be used together with {ECDSA-recover} to obtain the signer of a message. For example:
+     *
+     * ```solidity
+     * bytes32 digest = _hashTypedDataV4(keccak256(abi.encode(
+     *     keccak256("Mail(address to,string contents)"),
+     *     mailTo,
+     *     keccak256(bytes(mailContents))
+     * )));
+     * address signer = ECDSA.recover(digest, signature);
+     * ```
+     */
+    function _hashTypedDataV4(bytes32 structHash) internal view virtual returns (bytes32) {
+        return MessageHashUtils.toTypedDataHash(_domainSeparatorV4(), structHash);
+    }
+
+    /// @inheritdoc IERC5267
+    function eip712Domain()
+        public
+        view
+        virtual
+        returns (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        )
+    {
+        return (
+            hex"0f", // 01111
+            _EIP712Name(),
+            _EIP712Version(),
+            block.chainid,
+            address(this),
+            bytes32(0),
+            new uint256[](0)
+        );
+    }
+
+    /**
+     * @dev The name parameter for the EIP712 domain.
+     *
+     * NOTE: By default this function reads _name which is an immutable value.
+     * It only reads from storage if necessary (in case the value is too large to fit in a ShortString).
+     */
+    // solhint-disable-next-line func-name-mixedcase
+    function _EIP712Name() internal view returns (string memory) {
+        return _name.toStringWithFallback(_nameFallback);
+    }
+
+    /**
+     * @dev The version parameter for the EIP712 domain.
+     *
+     * NOTE: By default this function reads _version which is an immutable value.
+     * It only reads from storage if necessary (in case the value is too large to fit in a ShortString).
+     */
+    // solhint-disable-next-line func-name-mixedcase
+    function _EIP712Version() internal view returns (string memory) {
+        return _version.toStringWithFallback(_versionFallback);
+    }
+}
+
 // File: contracts/PadiProtocol.sol
 
 
@@ -4268,20 +5426,49 @@ pragma solidity ^0.8.0;
 
 
 
-contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProtocol {
+
+
+contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProtocol,EIP712 {
     using SafeERC20 for IERC20;
     using PadiTypes for *;
 
     IPadiStorage public storageContract;
     IERC20 public paymentToken;
     address public padiWallet;
+    address public hotWallet;
     uint256 private _nftIdCounter = 1;
     uint256 public nftPrice;
+    mapping(address => uint256) public nonces;
+    bytes32 private constant META_TRANSACTION_TYPEHASH = keccak256("MetaTransaction(address from,address to,bytes data,uint256 nonce,uint256 deadline)");
+
+
+    struct MetaTransaction {
+    address from;      // The actual user making the call
+    address to;        // Target contract (should be address(this))
+    bytes data;        // Encoded function call
+    uint256 nonce;     // Prevents replay attacks
+    uint256 deadline;  // Transaction expiration timestamp
+}
+
+// ============================================================
+// 4. EVENTS
+// ============================================================
+event MetaTransactionExecuted(
+    address indexed from,
+    address indexed relayer,
+    bytes4 functionSelector,
+    bool success,
+    uint256 nonce
+);
+
+event HotWalletUpdated(address indexed oldWallet, address indexed newWallet);
+event CaseCancelled(uint256 indexed caseId, address indexed member, uint256 refundAmount);
+
 
     modifier onlyMember(address member) {
         require(
-            msg.sender == member || 
-            msg.sender == getRepresentative(member),
+            _msgSender() == member || 
+            _msgSender() == getRepresentative(member),
             "Unauthorized: Not member or representative"
         );
         _;
@@ -4299,15 +5486,20 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         address _storage,
         address _paymentToken,
         address _padiWallet,
-        uint256 _nftPrice
+        uint256 _nftPrice,
+        address _hotWallet 
     ) 
         ERC721("Padi Membership", "PADI")
-        Ownable(msg.sender)
+        Ownable(_msgSender())
+        EIP712("PadiProtocol", "1")
     {
         storageContract = IPadiStorage(_storage);
         paymentToken = IERC20(_paymentToken);
         padiWallet = _padiWallet;
         nftPrice = _nftPrice;
+        hotWallet = _hotWallet;  // NEW
+    
+    require(_hotWallet != address(0), "Invalid hot wallet");
 
     }
 
@@ -4322,7 +5514,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
     ) external override {
         require(balanceOf(member) == 0, "Already has membership NFT");
         require(paymentAmount == nftPrice,"pay the exact amount !!!");
-        paymentToken.safeTransferFrom(msg.sender, padiWallet, paymentAmount);
+        paymentToken.safeTransferFrom(_msgSender(), padiWallet, paymentAmount);
 
         uint256 nftId = _nftIdCounter++;
         _mint(member, nftId);
@@ -4361,19 +5553,19 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
     // Case Functions
     // ================================================================
 
-    // Existing createCase function using msg.sender as the member.
+    // Existing createCase function using _msgSender() as the member.
 /*     function createCase(
         address lawyer,
         string calldata description,
         uint256 reward,
         bool isEmergency
-    ) external onlyMember(msg.sender) {
-        require(balanceOf(msg.sender) > 0, "Membership NFT required");
+    ) external onlyMember(_msgSender()) {
+        require(balanceOf(_msgSender()) > 0, "Membership NFT required");
 
          uint256 caseId = storageContract.getAndIncrementCaseId();
         PadiTypes.Case memory newCase = PadiTypes.Case({
             id: caseId,
-            member: msg.sender,
+            member: _msgSender(),
             lawyer: lawyer,
             descriptionMetadata: description,
             creationDate: block.timestamp,
@@ -4383,8 +5575,8 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         });
 
         storageContract.addOrUpdateCase(newCase);
-        paymentToken.safeTransferFrom(msg.sender, address(this), reward);
-        emit CaseAdded(lawyer, caseId, msg.sender, isEmergency);
+        paymentToken.safeTransferFrom(_msgSender(), address(this), reward);
+        emit CaseAdded(lawyer, caseId, _msgSender(), isEmergency);
     } */
  
     // Implementing the interface addCase function (allowing an explicit member address).
@@ -4395,7 +5587,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         uint256 rewardAmount,
         bool isEmergency
     ) external override {
-        require(msg.sender == memberAddress, "Only member can create case");
+        require(_msgSender() == memberAddress, "Only member can create case");
         require(balanceOf(memberAddress) > 0, "Membership NFT required");
 
         uint256 caseId = storageContract.getAndIncrementCaseId();
@@ -4417,7 +5609,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
 
     // Modified resolveCase to match the interface signature.
     function resolveCase(address lawyerAddress, uint256 caseId) external override onlyActiveLawyer(lawyerAddress) {
-        require(lawyerAddress == msg.sender, "Unauthorized: Only assigned lawyer can resolve");
+        require(lawyerAddress == _msgSender(), "Unauthorized: Only assigned lawyer can resolve");
         PadiTypes.Case memory c = storageContract.cases(caseId);
         require(c.lawyer == lawyerAddress, "Case not assigned to lawyer");
         require(!c.resolved, "Case already resolved");
@@ -4448,7 +5640,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         l.totalRewards += c.rewardAmount;
         storageContract.addOrUpdateLawyer(l);
 
-        paymentToken.safeTransfer(msg.sender, c.rewardAmount);
+        paymentToken.safeTransfer(_msgSender(), c.rewardAmount);
         emit CaseResolved(lawyerAddress, caseId);
     }
 
@@ -4482,7 +5674,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         address lawyer,
         string calldata profileURI
     ) external override {
-        require(msg.sender == lawyer, "Can only sign up self");
+        require(_msgSender() == lawyer, "Can only sign up self");
         PadiTypes.Lawyer memory newLawyer = PadiTypes.Lawyer({
             wallet: lawyer,
             caseIds: new uint256[](0),
@@ -4514,7 +5706,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         uint256 rewardAmount
     ) external override {
         // For security, restrict who can call this function.
-        require(msg.sender == owner(), "Unauthorized: Only owner can reward");
+        require(_msgSender() == owner(), "Unauthorized: Only owner can reward");
         paymentToken.safeTransfer(lawyerAddress, rewardAmount);
         emit LawyerRewarded(lawyerAddress, rewardAmount, caseId);
     }
@@ -4539,7 +5731,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         incidentId = storageContract.getAndIncrementIncidentId();
         PadiTypes.Incident memory newIncident = PadiTypes.Incident({
             id: incidentId,
-            reporter: msg.sender,
+            reporter: _msgSender(),
             descriptionMetadata: descriptionMetadata,
             timestamp: block.timestamp,
             status: PadiTypes.VerificationStatus.Unverified,
@@ -4548,7 +5740,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
             mediaURIs: mediaURIs
         });
         storageContract.addOrUpdateIncident(newIncident);
-        emit IncidentReported(incidentId, msg.sender, block.timestamp);
+        emit IncidentReported(incidentId, _msgSender(), block.timestamp);
         return incidentId;
     }
 
@@ -4559,13 +5751,13 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
     ) external override {
         // Create a new corroborator record.
         PadiTypes.Corroborator memory newCorroborator = PadiTypes.Corroborator({
-            member: msg.sender,
+            member: _msgSender(),
             timestamp: block.timestamp,
             comment: comment,
             mediaURIs: mediaURIs
         });
         storageContract.addCorroboratorToIncident(incidentId, newCorroborator);
-        emit CorroborationAdded(incidentId, msg.sender, block.timestamp);
+        emit CorroborationAdded(incidentId, _msgSender(), block.timestamp);
     }
 
     function updateIncidentStatus(
@@ -4573,13 +5765,13 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         uint8 status
     ) external override {
         // For security, require the caller to be authorized (owner or designated verifier).
-        require(msg.sender == owner(), "Unauthorized: Only owner can update status");
+        require(_msgSender() == owner(), "Unauthorized: Only owner can update status");
         PadiTypes.Incident memory inc = storageContract.incidents(incidentId);
         require(inc.id != 0, "Incident does not exist");
         inc.status = PadiTypes.VerificationStatus(status);
-        inc.verifiedBy = msg.sender;
+        inc.verifiedBy = _msgSender();
         storageContract.addOrUpdateIncident(inc);
-        emit IncidentStatusUpdated(incidentId, status, msg.sender);
+        emit IncidentStatusUpdated(incidentId, status, _msgSender());
     }
 
     function transferTokenCaseBalance( address newContract) external override onlyOwner {
@@ -4661,13 +5853,139 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
             _setTokenURI(oldTokenId, uri);        // Preserve metadata
             oldNFT.burn(oldTokenId); // Assumes `IOldNFT` has a `burn` function
         }
-        oldNFT.transferOwnership(msg.sender);
+        oldNFT.transferOwnership(_msgSender());
 
 }
 
     function burn(uint256 tokenId) external  onlyOwner {
         _burn(tokenId); // Inherited from ERC721
     }
+
+    /**
+     * @notice Execute a meta transaction on behalf of a user
+     * @param metaTx The meta transaction details
+     * @param signature The user's signature authorizing the transaction
+     */
+    function executeMetaTransaction(
+        MetaTransaction calldata metaTx,
+        bytes calldata signature
+    ) external returns (bool success, bytes memory returnData) {
+        require(_msgSender() == hotWallet, "Only hot wallet can relay");
+        require(block.timestamp <= metaTx.deadline, "Transaction expired");
+        require(metaTx.to == address(this), "Invalid target contract");
+        require(metaTx.nonce == nonces[metaTx.from], "Invalid nonce");
+        
+        // Verify signature
+        bytes32 digest = _hashTypedDataV4(
+            keccak256(
+                abi.encode(
+                    META_TRANSACTION_TYPEHASH,
+                    metaTx.from,
+                    metaTx.to,
+                    keccak256(metaTx.data),
+                    metaTx.nonce,
+                    metaTx.deadline
+                )
+            )
+        );
+        
+        address signer = ECDSA.recover(digest, signature);
+        require(signer == metaTx.from, "Invalid signature");
+        require(signer != address(0), "Invalid signer");
+        
+        // Increment nonce
+        nonces[metaTx.from]++;
+        
+        // Execute transaction
+        (success, returnData) = address(this).call(
+            abi.encodePacked(metaTx.data, metaTx.from)
+        );
+        
+        bytes4 functionSelector;
+        if (metaTx.data.length >= 4) {
+            functionSelector = bytes4(metaTx.data[0]) | 
+                              (bytes4(metaTx.data[1]) >> 8) | 
+                              (bytes4(metaTx.data[2]) >> 16) | 
+                              (bytes4(metaTx.data[3]) >> 24);
+        }
+        
+        emit MetaTransactionExecuted(
+            metaTx.from,
+            _msgSender(),
+            functionSelector,
+            success,
+            metaTx.nonce
+        );
+        
+        return (success, returnData);
+    }
+
+
+/**
+     * @notice Gets the actual sender (user or meta-tx originator)
+     * @dev Overrides Context._msgSender() to support meta-transactions
+     */
+    function _msgSender() internal view override returns (address sender) {
+        if (msg.sender == address(this) && msg.data.length >= 20) {
+            assembly {
+                sender := shr(96, calldataload(sub(calldatasize(), 20)))
+            }
+        } else {
+            sender = msg.sender;
+        }
+        return sender;
+    }
+
+// ============================================================
+// 8. ADMINISTRATIVE FUNCTIONS
+// ============================================================
+/**
+ * @notice Update the hot wallet address
+ * @param newHotWallet The new authorized relayer address
+ */
+function setHotWallet(address newHotWallet) external onlyOwner {
+    require(newHotWallet != address(0), "Invalid address");
+    address oldWallet = hotWallet;
+    hotWallet = newHotWallet;
+    emit HotWalletUpdated(oldWallet, newHotWallet);
+}
+
+function adminCancelCase(uint256 caseId, address refundTo) external onlyOwner {
+    PadiTypes.Case memory c = storageContract.cases(caseId);
+    
+    require(c.id != 0, "Case does not exist");
+    require(!c.resolved, "Case already resolved");
+    require(refundTo != address(0), "Invalid refund address");
+    
+    // Mark case as resolved (cancelled)
+    c.resolved = true;
+    c.resolutionDate = block.timestamp;
+    storageContract.addOrUpdateCase(c);
+    
+    // Refund the reward amount
+    paymentToken.safeTransfer(refundTo, c.rewardAmount);
+    
+    emit CaseCancelled(caseId, refundTo, c.rewardAmount);
+}
+/**
+ * @notice Get the current nonce for an address
+ * @param user The user address
+ */
+function getNonce(address user) external view returns (uint256) {
+    return nonces[user];
+}
+
+// ============================================================
+// 9. DOMAIN SEPARATOR (AUTOMATICALLY PROVIDED BY EIP712)
+// ============================================================
+/**
+ * @notice Get the EIP-712 domain separator
+ * @dev Used by clients to construct proper signatures
+ */
+function getDomainSeparator() external view returns (bytes32) {
+    return _domainSeparatorV4();
+}
+
 
 
     function migrateNftAndCaseTokens(address oldContractAddress) external onlyOwner  {

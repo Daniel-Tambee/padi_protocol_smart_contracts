@@ -10,21 +10,50 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
-contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProtocol {
+contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProtocol,EIP712 {
     using SafeERC20 for IERC20;
     using PadiTypes for *;
 
     IPadiStorage public storageContract;
     IERC20 public paymentToken;
     address public padiWallet;
+    address public hotWallet;
     uint256 private _nftIdCounter = 1;
     uint256 public nftPrice;
+    mapping(address => uint256) public nonces;
+    bytes32 private constant META_TRANSACTION_TYPEHASH = keccak256("MetaTransaction(address from,address to,bytes data,uint256 nonce,uint256 deadline)");
+
+
+    struct MetaTransaction {
+    address from;      // The actual user making the call
+    address to;        // Target contract (should be address(this))
+    bytes data;        // Encoded function call
+    uint256 nonce;     // Prevents replay attacks
+    uint256 deadline;  // Transaction expiration timestamp
+}
+
+// ============================================================
+// 4. EVENTS
+// ============================================================
+event MetaTransactionExecuted(
+    address indexed from,
+    address indexed relayer,
+    bytes4 functionSelector,
+    bool success,
+    uint256 nonce
+);
+
+event HotWalletUpdated(address indexed oldWallet, address indexed newWallet);
+event CaseCancelled(uint256 indexed caseId, address indexed member, uint256 refundAmount);
+
 
     modifier onlyMember(address member) {
         require(
-            msg.sender == member || 
-            msg.sender == getRepresentative(member),
+            _msgSender() == member || 
+            _msgSender() == getRepresentative(member),
             "Unauthorized: Not member or representative"
         );
         _;
@@ -42,15 +71,20 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         address _storage,
         address _paymentToken,
         address _padiWallet,
-        uint256 _nftPrice
+        uint256 _nftPrice,
+        address _hotWallet 
     ) 
         ERC721("Padi Membership", "PADI")
-        Ownable(msg.sender)
+        Ownable(_msgSender())
+        EIP712("PadiProtocol", "1")
     {
         storageContract = IPadiStorage(_storage);
         paymentToken = IERC20(_paymentToken);
         padiWallet = _padiWallet;
         nftPrice = _nftPrice;
+        hotWallet = _hotWallet;  // NEW
+    
+    require(_hotWallet != address(0), "Invalid hot wallet");
 
     }
 
@@ -65,7 +99,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
     ) external override {
         require(balanceOf(member) == 0, "Already has membership NFT");
         require(paymentAmount == nftPrice,"pay the exact amount !!!");
-        paymentToken.safeTransferFrom(msg.sender, padiWallet, paymentAmount);
+        paymentToken.safeTransferFrom(_msgSender(), padiWallet, paymentAmount);
 
         uint256 nftId = _nftIdCounter++;
         _mint(member, nftId);
@@ -104,19 +138,19 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
     // Case Functions
     // ================================================================
 
-    // Existing createCase function using msg.sender as the member.
+    // Existing createCase function using _msgSender() as the member.
 /*     function createCase(
         address lawyer,
         string calldata description,
         uint256 reward,
         bool isEmergency
-    ) external onlyMember(msg.sender) {
-        require(balanceOf(msg.sender) > 0, "Membership NFT required");
+    ) external onlyMember(_msgSender()) {
+        require(balanceOf(_msgSender()) > 0, "Membership NFT required");
 
          uint256 caseId = storageContract.getAndIncrementCaseId();
         PadiTypes.Case memory newCase = PadiTypes.Case({
             id: caseId,
-            member: msg.sender,
+            member: _msgSender(),
             lawyer: lawyer,
             descriptionMetadata: description,
             creationDate: block.timestamp,
@@ -126,8 +160,8 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         });
 
         storageContract.addOrUpdateCase(newCase);
-        paymentToken.safeTransferFrom(msg.sender, address(this), reward);
-        emit CaseAdded(lawyer, caseId, msg.sender, isEmergency);
+        paymentToken.safeTransferFrom(_msgSender(), address(this), reward);
+        emit CaseAdded(lawyer, caseId, _msgSender(), isEmergency);
     } */
  
     // Implementing the interface addCase function (allowing an explicit member address).
@@ -138,7 +172,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         uint256 rewardAmount,
         bool isEmergency
     ) external override {
-        require(msg.sender == memberAddress, "Only member can create case");
+        require(_msgSender() == memberAddress, "Only member can create case");
         require(balanceOf(memberAddress) > 0, "Membership NFT required");
 
         uint256 caseId = storageContract.getAndIncrementCaseId();
@@ -160,7 +194,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
 
     // Modified resolveCase to match the interface signature.
     function resolveCase(address lawyerAddress, uint256 caseId) external override onlyActiveLawyer(lawyerAddress) {
-        require(lawyerAddress == msg.sender, "Unauthorized: Only assigned lawyer can resolve");
+        require(lawyerAddress == _msgSender(), "Unauthorized: Only assigned lawyer can resolve");
         PadiTypes.Case memory c = storageContract.cases(caseId);
         require(c.lawyer == lawyerAddress, "Case not assigned to lawyer");
         require(!c.resolved, "Case already resolved");
@@ -191,7 +225,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         l.totalRewards += c.rewardAmount;
         storageContract.addOrUpdateLawyer(l);
 
-        paymentToken.safeTransfer(msg.sender, c.rewardAmount);
+        paymentToken.safeTransfer(_msgSender(), c.rewardAmount);
         emit CaseResolved(lawyerAddress, caseId);
     }
 
@@ -225,7 +259,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         address lawyer,
         string calldata profileURI
     ) external override {
-        require(msg.sender == lawyer, "Can only sign up self");
+        require(_msgSender() == lawyer, "Can only sign up self");
         PadiTypes.Lawyer memory newLawyer = PadiTypes.Lawyer({
             wallet: lawyer,
             caseIds: new uint256[](0),
@@ -257,7 +291,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         uint256 rewardAmount
     ) external override {
         // For security, restrict who can call this function.
-        require(msg.sender == owner(), "Unauthorized: Only owner can reward");
+        require(_msgSender() == owner(), "Unauthorized: Only owner can reward");
         paymentToken.safeTransfer(lawyerAddress, rewardAmount);
         emit LawyerRewarded(lawyerAddress, rewardAmount, caseId);
     }
@@ -282,7 +316,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         incidentId = storageContract.getAndIncrementIncidentId();
         PadiTypes.Incident memory newIncident = PadiTypes.Incident({
             id: incidentId,
-            reporter: msg.sender,
+            reporter: _msgSender(),
             descriptionMetadata: descriptionMetadata,
             timestamp: block.timestamp,
             status: PadiTypes.VerificationStatus.Unverified,
@@ -291,7 +325,7 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
             mediaURIs: mediaURIs
         });
         storageContract.addOrUpdateIncident(newIncident);
-        emit IncidentReported(incidentId, msg.sender, block.timestamp);
+        emit IncidentReported(incidentId, _msgSender(), block.timestamp);
         return incidentId;
     }
 
@@ -302,13 +336,13 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
     ) external override {
         // Create a new corroborator record.
         PadiTypes.Corroborator memory newCorroborator = PadiTypes.Corroborator({
-            member: msg.sender,
+            member: _msgSender(),
             timestamp: block.timestamp,
             comment: comment,
             mediaURIs: mediaURIs
         });
         storageContract.addCorroboratorToIncident(incidentId, newCorroborator);
-        emit CorroborationAdded(incidentId, msg.sender, block.timestamp);
+        emit CorroborationAdded(incidentId, _msgSender(), block.timestamp);
     }
 
     function updateIncidentStatus(
@@ -316,13 +350,13 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
         uint8 status
     ) external override {
         // For security, require the caller to be authorized (owner or designated verifier).
-        require(msg.sender == owner(), "Unauthorized: Only owner can update status");
+        require(_msgSender() == owner(), "Unauthorized: Only owner can update status");
         PadiTypes.Incident memory inc = storageContract.incidents(incidentId);
         require(inc.id != 0, "Incident does not exist");
         inc.status = PadiTypes.VerificationStatus(status);
-        inc.verifiedBy = msg.sender;
+        inc.verifiedBy = _msgSender();
         storageContract.addOrUpdateIncident(inc);
-        emit IncidentStatusUpdated(incidentId, status, msg.sender);
+        emit IncidentStatusUpdated(incidentId, status, _msgSender());
     }
 
     function transferTokenCaseBalance( address newContract) external override onlyOwner {
@@ -404,13 +438,139 @@ contract PadiProtocol is ERC721Enumerable, ERC721URIStorage, Ownable, IPadiProto
             _setTokenURI(oldTokenId, uri);        // Preserve metadata
             oldNFT.burn(oldTokenId); // Assumes `IOldNFT` has a `burn` function
         }
-        oldNFT.transferOwnership(msg.sender);
+        oldNFT.transferOwnership(_msgSender());
 
 }
 
     function burn(uint256 tokenId) external  onlyOwner {
         _burn(tokenId); // Inherited from ERC721
     }
+
+    /**
+     * @notice Execute a meta transaction on behalf of a user
+     * @param metaTx The meta transaction details
+     * @param signature The user's signature authorizing the transaction
+     */
+    function executeMetaTransaction(
+        MetaTransaction calldata metaTx,
+        bytes calldata signature
+    ) external returns (bool success, bytes memory returnData) {
+        require(_msgSender() == hotWallet, "Only hot wallet can relay");
+        require(block.timestamp <= metaTx.deadline, "Transaction expired");
+        require(metaTx.to == address(this), "Invalid target contract");
+        require(metaTx.nonce == nonces[metaTx.from], "Invalid nonce");
+        
+        // Verify signature
+        bytes32 digest = _hashTypedDataV4(
+            keccak256(
+                abi.encode(
+                    META_TRANSACTION_TYPEHASH,
+                    metaTx.from,
+                    metaTx.to,
+                    keccak256(metaTx.data),
+                    metaTx.nonce,
+                    metaTx.deadline
+                )
+            )
+        );
+        
+        address signer = ECDSA.recover(digest, signature);
+        require(signer == metaTx.from, "Invalid signature");
+        require(signer != address(0), "Invalid signer");
+        
+        // Increment nonce
+        nonces[metaTx.from]++;
+        
+        // Execute transaction
+        (success, returnData) = address(this).call(
+            abi.encodePacked(metaTx.data, metaTx.from)
+        );
+        
+        bytes4 functionSelector;
+        if (metaTx.data.length >= 4) {
+            functionSelector = bytes4(metaTx.data[0]) | 
+                              (bytes4(metaTx.data[1]) >> 8) | 
+                              (bytes4(metaTx.data[2]) >> 16) | 
+                              (bytes4(metaTx.data[3]) >> 24);
+        }
+        
+        emit MetaTransactionExecuted(
+            metaTx.from,
+            _msgSender(),
+            functionSelector,
+            success,
+            metaTx.nonce
+        );
+        
+        return (success, returnData);
+    }
+
+
+/**
+     * @notice Gets the actual sender (user or meta-tx originator)
+     * @dev Overrides Context._msgSender() to support meta-transactions
+     */
+    function _msgSender() internal view override returns (address sender) {
+        if (msg.sender == address(this) && msg.data.length >= 20) {
+            assembly {
+                sender := shr(96, calldataload(sub(calldatasize(), 20)))
+            }
+        } else {
+            sender = msg.sender;
+        }
+        return sender;
+    }
+
+// ============================================================
+// 8. ADMINISTRATIVE FUNCTIONS
+// ============================================================
+/**
+ * @notice Update the hot wallet address
+ * @param newHotWallet The new authorized relayer address
+ */
+function setHotWallet(address newHotWallet) external onlyOwner {
+    require(newHotWallet != address(0), "Invalid address");
+    address oldWallet = hotWallet;
+    hotWallet = newHotWallet;
+    emit HotWalletUpdated(oldWallet, newHotWallet);
+}
+
+function adminCancelCase(uint256 caseId, address refundTo) external onlyOwner {
+    PadiTypes.Case memory c = storageContract.cases(caseId);
+    
+    require(c.id != 0, "Case does not exist");
+    require(!c.resolved, "Case already resolved");
+    require(refundTo != address(0), "Invalid refund address");
+    
+    // Mark case as resolved (cancelled)
+    c.resolved = true;
+    c.resolutionDate = block.timestamp;
+    storageContract.addOrUpdateCase(c);
+    
+    // Refund the reward amount
+    paymentToken.safeTransfer(refundTo, c.rewardAmount);
+    
+    emit CaseCancelled(caseId, refundTo, c.rewardAmount);
+}
+/**
+ * @notice Get the current nonce for an address
+ * @param user The user address
+ */
+function getNonce(address user) external view returns (uint256) {
+    return nonces[user];
+}
+
+// ============================================================
+// 9. DOMAIN SEPARATOR (AUTOMATICALLY PROVIDED BY EIP712)
+// ============================================================
+/**
+ * @notice Get the EIP-712 domain separator
+ * @dev Used by clients to construct proper signatures
+ */
+function getDomainSeparator() external view returns (bytes32) {
+    return _domainSeparatorV4();
+}
+
 
 
     function migrateNftAndCaseTokens(address oldContractAddress) external onlyOwner  {
